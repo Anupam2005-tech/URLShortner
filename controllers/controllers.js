@@ -20,24 +20,40 @@ async function shortURLHandler(req, res) {
 }
 
 async function webHandle(req, res) {
-    const shortId = req.params.id;
-    const entry = await URL.findOne({ shortId });
+    try {
+        const shortId = req.params.shortId;
+        const entry = await URL.findOne({ shortId });
 
-    if (!entry) {
-        return res.status(404).json({ error: 'Short URL not found' });
+        if (!entry) {
+            return res.status(404).json({ error: 'Short URL not found' });
+        }
+
+        entry.visitHistory.push({ timeStamp: Date.now() });
+        await entry.save();
+
+        // Redirect to the original URL
+        res.redirect(entry.url);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-
-    // Optionally update visit history
-    entry.visitHistory.push({ timeStamp: Date.now() });
-    await entry.save();
-
-    // Redirect to the original URL
-    res.redirect(entry.url);
 }
-async function analyticsHandle(req,res){
-    const shortId=req.params.shortId
-    const result=await URL.findOne({shortId})
-    return res.json({totalClicks:result.visitHistory.length,analytics:result.visitHistory})
+
+async function analyticsHandle(req, res) {
+    try {
+        const shortId = req.params.shortId;
+        const result = await URL.findOne({ shortId });
+
+        if (!result) {
+            return res.status(404).json({ error: 'Short URL not found' });
+        }
+
+        return res.json({
+            totalClicks: result.visitHistory.length,
+            analytics: result.visitHistory,
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 module.exports ={ shortURLHandler,webHandle,analyticsHandle}
