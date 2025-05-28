@@ -1,13 +1,34 @@
-const sessionIdToUserMap=new Map()
+const jwt = require("jsonwebtoken");
 
-function setUser(id,user){
-    sessionIdToUserMap.set()
+const secret_key = "wg7v8cte7386bxure76r7vjvufufvh79849ajvt83t15236b";
+console.log(secret_key);
+function setUser(user) {
+  if (!user || !user._id || !user.email) {
+    throw new Error("Invalid user object");
+  }
+  return jwt.sign(
+    {
+      _id: user._id,
+      email: user.email,
+    },
+    secret_key,
+    { expiresIn: "48h" }
+  );
 }
 
-function getUser(id){
-    return sessionIdToUserMap.get(id)
+function getUser(token) {
+  if(!token){
+    return null
+  }
+  try{
+    return jwt.verify(token, secret_key);
+  }
+  catch(err){
+    console.error("Invalid token:", err);
+    return null;
+  }
 }
-
-module.exports={
-    setUser,getUser
-}
+module.exports = {
+  setUser,
+  getUser,
+};

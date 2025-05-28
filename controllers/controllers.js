@@ -1,8 +1,7 @@
 const shortid = require("shortid");
 const URL = require("../modals/urlSchema");
 const users = require("../modals/usersSchema");
-const {v4:uuidv4}=require("uuid")
-const {setUser,getUser}=require("../services/cookies")
+const {setUser,getUser}=require('../services/cookies')
 
 async function shortURLHandler(req, res) {
   const body = req.body;
@@ -59,7 +58,6 @@ async function analyticsHandle(req, res) {
   }
 }
 
-
 // user auth
 async function createuserHandle(req, res) {
   try {
@@ -67,7 +65,7 @@ async function createuserHandle(req, res) {
     const userExist = users.findOne({ email });
     if (!name || !email || !password) {
       return res.status(400).json({ msg: "field required !" });
-    } 
+    }
     await users.create({
       name,
       email,
@@ -79,46 +77,80 @@ async function createuserHandle(req, res) {
   }
 }
 
-async function fetchuserHandler(req,res){
-try{
-    const {email,password}=req.body
-    const userQuery=  await users.findOne({email,password})
-    if (!userQuery){
-        return res.json({msg:"Invalid email or password "})
+async function fetchuserHandler(req, res) {
+  try {
+    const { email, password } = req.body;
+    const userQuery = await users.findOne({ email, password });
+    if (!userQuery) {
+      return res.json({ msg: "Invalid email or password " });
+    } else {
+     const token= setUser(userQuery)
+     res.cookie('token',token)
+      return res.json({ msg: ` login successfully` });
     }
-    else{
-        const sessionId=uuidv4()
-        setUser(sessionId,userQuery)
-        res.cookie('uuid',sessionId)
-        return res.json({msg:` ${userQuery}`})
-    }
-}
-catch(err){
-    return res.json({msg:`some error occured while fetching user  ${err}`})
-}
+  } catch (err) {
+    return res.json({ msg: `some error occured while fetching user  ${err}` });
+  }
 }
 
-async function deleteuserHandle(req,res){
-    try{
-        const {name,email,password}=req.body
-        const userQuery=await users.findOneAndDelete({name,email,password})
-        if (!userQuery){
-            return res.json({msg:"no such user exist"})
-        }
-        else{
+async function deleteuserHandle(req, res) {
+  try {
+    const user=getUser(req.cookies.token)
 
-            return res.json({msg:"user deleted successfully"})
-        }
+    if (!user) {
+      return res.status(401).json({ msg: "Unauthorized access" });
     }
-    catch(err){
-        return res.json({msg:`some error occured while deleting user ${err}`})
+    else {
+      const deleteUser=await users.findByIdAndDelete(user._id)
+      if (!deleteUser) {
+        return res.status(404).json({ msg: "User not found" });
+      }
+       res.clearCookie("token", { httpOnly: true });
+      return res.json({ msg: "user deleted successfully" });
     }
+  } catch (err) {
+    return res.json({ msg: `some error occured while deleting user ${err}` });
+  }
 }
+
+async function updateuserHandle(req, res) {
+  try {
+    const user = getUser(req.cookies.token);
+
+    if (!user) {
+      return res.status(401).json({ msg: "Unauthorized" });
+    }
+
+    const { newName, newEmail, newPassword } = req.body;
+
+    const updatedUser = await users.findOneAndUpdate(
+      { _id: user.id },
+      {
+        name: newName,
+        email: newEmail,
+        password: newPassword,
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ msg: "User not found or update failed" });
+    }
+
+    return res.json({ msg: "Updated successfully", user: updatedUser.toObject() });
+  } catch (err) {
+    console.error(`Some error occurred: ${err}`);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+}
+
+
 module.exports = {
   shortURLHandler,
   webHandle,
   analyticsHandle,
   createuserHandle,
   fetchuserHandler,
-  deleteuserHandle
+  deleteuserHandle,
+  updateuserHandle,
 };

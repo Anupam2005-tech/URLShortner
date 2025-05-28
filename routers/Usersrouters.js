@@ -1,11 +1,12 @@
 const express=require('express')
-const {createuserHandle,fetchuserHandler,deleteuserHandle}=require('../controllers/controllers')
-
+const {createuserHandle,fetchuserHandler,deleteuserHandle,updateuserHandle}=require('../controllers/controllers')
+const {checkSession}=require('../index')
 const Userrouter=express.Router()
 
 // USERS AUTH ROUTERS
 Userrouter.post("/create",createuserHandle)
-Userrouter.get("/fetch",fetchuserHandler)
-Userrouter.delete('/delete',deleteuserHandle)
+Userrouter.get("/login",fetchuserHandler)
+Userrouter.put("/update",checkSession,updateuserHandle)
+Userrouter.delete('/delete',checkSession,deleteuserHandle)
 
 module.exports=Userrouter
