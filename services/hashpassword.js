@@ -1,0 +1,16 @@
+const bcrypt=require('bcrypt')
+const saltRounds=10
+
+function hashPassword(plainpassword){
+
+return bcrypt.hash(plainpassword,saltRounds)
+}
+
+function checkHashPassword(plainpassword,hash){
+    return bcrypt.compare(plainpassword,hash)
+}
+
+module.exports={
+    hashPassword,
+    checkHashPassword
+}

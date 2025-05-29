@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 
 const secret_key = "wg7v8cte7386bxure76r7vjvufufvh79849ajvt83t15236b";
-console.log(secret_key);
+
 function setUser(user) {
   if (!user || !user._id || !user.email) {
-    throw new Error("Invalid user object");
+    throw  new Error("Invalid user ");
   }
   return jwt.sign(
     {

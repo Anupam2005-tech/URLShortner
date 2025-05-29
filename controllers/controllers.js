@@ -1,7 +1,13 @@
 const shortid = require("shortid");
 const URL = require("../modals/urlSchema");
 const users = require("../modals/usersSchema");
-const {setUser,getUser}=require('../services/cookies')
+const { setUser, getUser } = require("../services/cookies");
+const {
+  hashPassword,
+  checkHashPassword,
+  hashPassword,
+  checkHashPassword,
+} = require("../services/hashpassword");
 
 async function shortURLHandler(req, res) {
   const body = req.body;
@@ -62,30 +68,41 @@ async function analyticsHandle(req, res) {
 async function createuserHandle(req, res) {
   try {
     const { name, email, password } = req.body;
-    const userExist = users.findOne({ email });
+    const userExist = await users.findOne({ email });
     if (!name || !email || !password) {
       return res.status(400).json({ msg: "field required !" });
+    } else if (userExist) {
+      return res.status(409).json({ msg: `user already exist.` });
     }
+    const hashedPassword = await hashPassword(password);
+    console.log("Hashed Password:", hashedPassword);
     await users.create({
       name,
       email,
-      password,
+      hashedPassword,
     });
-    return res.status(201).json({ msg: "account created successfully !" });
+    return res.status(201).json({ msg: `account created successfully ! ` });
   } catch (err) {
-    console.error(err);
+    return res.status(500).json({ msg: `internal error occured` });
   }
 }
 
 async function fetchuserHandler(req, res) {
   try {
     const { email, password } = req.body;
-    const userQuery = await users.findOne({ email, password });
+    if (!email || !password) {
+      return res.status(400).json({ msg: "Email and password are required." });
+    }
+    const userQuery = await users.findOne({ email });
     if (!userQuery) {
       return res.json({ msg: "Invalid email or password " });
+    }
+    const passwordMatch = await checkHashPassword(password, userQuery.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ msg: "Invalid email or password." });
     } else {
-     const token= setUser(userQuery)
-     res.cookie('token',token)
+      const token = setUser(userQuery);
+      res.cookie("token", token, { httpOnly: true });
       return res.json({ msg: ` login successfully` });
     }
   } catch (err) {
@@ -95,17 +112,16 @@ async function fetchuserHandler(req, res) {
 
 async function deleteuserHandle(req, res) {
   try {
-    const user=getUser(req.cookies.token)
+    const user = getUser(req.cookies.token);
 
     if (!user) {
       return res.status(401).json({ msg: "Unauthorized access" });
-    }
-    else {
-      const deleteUser=await users.findByIdAndDelete(user._id)
+    } else {
+      const deleteUser = await users.findByIdAndDelete(user._id);
       if (!deleteUser) {
         return res.status(404).json({ msg: "User not found" });
       }
-       res.clearCookie("token", { httpOnly: true });
+      res.clearCookie("token", { httpOnly: true });
       return res.json({ msg: "user deleted successfully" });
     }
   } catch (err) {
@@ -124,7 +140,7 @@ async function updateuserHandle(req, res) {
     const { newName, newEmail, newPassword } = req.body;
 
     const updatedUser = await users.findOneAndUpdate(
-      { _id: user.id },
+      { _id: user._id },
       {
         name: newName,
         email: newEmail,
@@ -137,13 +153,15 @@ async function updateuserHandle(req, res) {
       return res.status(404).json({ msg: "User not found or update failed" });
     }
 
-    return res.json({ msg: "Updated successfully", user: updatedUser.toObject() });
+    return res.json({
+      msg: "Updated successfully",
+      user: updatedUser.toObject(),
+    });
   } catch (err) {
     console.error(`Some error occurred: ${err}`);
     return res.status(500).json({ msg: "Internal server error" });
   }
 }
-
 
 module.exports = {
   shortURLHandler,
