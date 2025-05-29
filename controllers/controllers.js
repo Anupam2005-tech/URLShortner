@@ -3,9 +3,7 @@ const URL = require("../modals/urlSchema");
 const users = require("../modals/usersSchema");
 const { setUser, getUser } = require("../services/cookies");
 const {
-  hashPassword,
-  checkHashPassword,
-  hashPassword,
+  hashedPassword,
   checkHashPassword,
 } = require("../services/hashpassword");
 
@@ -39,7 +37,6 @@ async function webHandle(req, res) {
     entry.visitHistory.push({ timeStamp: Date.now() });
     await entry.save();
 
-    // Redirect to the original URL
     res.redirect(entry.url);
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
@@ -74,16 +71,16 @@ async function createuserHandle(req, res) {
     } else if (userExist) {
       return res.status(409).json({ msg: `user already exist.` });
     }
-    const hashedPassword = await hashPassword(password);
-    console.log("Hashed Password:", hashedPassword);
+    const hashedpasswordValue = await hashedPassword(password);
+    console.log("Hashed Password:", hashedpasswordValue);
     await users.create({
       name,
       email,
-      hashedPassword,
+      password:hashedpasswordValue,
     });
     return res.status(201).json({ msg: `account created successfully ! ` });
   } catch (err) {
-    return res.status(500).json({ msg: `internal error occured` });
+    return res.status(500).json(err);
   }
 }
 
@@ -103,6 +100,7 @@ async function fetchuserHandler(req, res) {
     } else {
       const token = setUser(userQuery);
       res.cookie("token", token, { httpOnly: true });
+      
       return res.json({ msg: ` login successfully` });
     }
   } catch (err) {
