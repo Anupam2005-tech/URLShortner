@@ -1,19 +1,30 @@
-import React from "react";
+import React,{useState} from "react";
 import { useForm,type SubmitHandler } from "react-hook-form";
+import { URLshortnerHandle } from "../connections";
+import { useNavigate } from "react-router-dom";
 
-type FormValues = {
+interface FormValues {
   redirectURL: string;
 };
 
 const URLpage: React.FC = () => {
+  const navigate=useNavigate()
+  const [shortId,setshortId]=useState('')
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log("Shortening URL:", data.redirectURL);
+  const onSubmit: SubmitHandler<FormValues> =async (data) => {
+    try{
+     const result=await URLshortnerHandle(data.redirectURL)
+     setshortId(result.shortId)
+    }catch(err:any){
+     if(err.response.status===401){
+      navigate('/user/login')
+     }
+    }
   };
 
   return (
@@ -48,6 +59,21 @@ const URLpage: React.FC = () => {
             Shorten URL
           </button>
         </form>
+        {shortId && (
+  <p className="text-center mt-4 text-green-600 font-semibold">
+    Short URL:{" "}
+    <a
+      href={`http://localhost:8000/${shortId}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="underline text-blue-700"
+    >
+      http://localhost:8000/url/{shortId}
+    </a>
+  </p>
+)}
+
+
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ const Userrouter = express.Router();
 
 // USERS AUTH ROUTERS
 Userrouter.post("/create", createuserHandle);
-Userrouter.get("/login", fetchuserHandler);
+Userrouter.post("/login", fetchuserHandler);
 Userrouter.put("/update", checkSession, updateuserHandle);
 Userrouter.delete("/delete", checkSession, deleteuserHandle);
 

@@ -78,7 +78,7 @@ async function createuserHandle(req, res) {
       email,
       password:hashedpasswordValue,
     });
-    return res.status(201).json({ msg: `account created successfully ! ` });
+    return res.status(201).json({ msg: `account created successfully ! `,redirectTo:'/user/login' });
   } catch (err) {
     return res.status(500).json(err);
   }
@@ -101,7 +101,7 @@ async function fetchuserHandler(req, res) {
       const token = setUser(userQuery);
       res.cookie("token", token, { httpOnly: true });
       
-      return res.json({ msg: ` login successfully` });
+      return res.json({ msg: ` login successfully`,redirectTo:'/url' });
     }
   } catch (err) {
     return res.json({ msg: `some error occured while fetching user  ${err}` });
@@ -160,6 +160,8 @@ async function updateuserHandle(req, res) {
     return res.status(500).json({ msg: "Internal server error" });
   }
 }
+
+
 
 module.exports = {
   shortURLHandler,

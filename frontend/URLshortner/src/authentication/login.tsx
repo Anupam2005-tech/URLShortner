@@ -1,21 +1,37 @@
-import React from "react";
+import React,{useState} from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import {loginuserHandle}from '../connections'
+import { useNavigate } from "react-router-dom";
 
 type LoginFormInputs = {
   email: string;
-  password: string;
+  password: string; 
 };
 
 const LoginForm: React.FC = () => {
+  const [msg,setmsg]=useState('')
+  const navigate=useNavigate()
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormInputs>();
 
-  const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
-    console.log("Login Data Submitted:", data);
-    // Handle login logic here (e.g., API call)
+  const onSubmit: SubmitHandler<LoginFormInputs> = async(data) => {
+    const result=   await loginuserHandle(data); 
+    setmsg(result.msg)
+    if(result.redirectTo){
+      setTimeout(()=>{
+        navigate(result.redirectTo!)
+
+      },1000)
+    }
+    else{
+      console.log('error occured while login');
+      
+    }
+      
+ 
   };
 
   return (
@@ -69,8 +85,17 @@ const LoginForm: React.FC = () => {
             className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium text-lg hover:bg-blue-700 transition-shadow shadow-md hover:shadow-lg"
           >
             Login
-          </button>
+          </button>          
         </form>
+        {msg && (
+            <p
+              className={`text-center mt-4 ${
+                msg.includes("success") ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {msg}
+            </p>
+          )}
       </div>
     </div>
   );
