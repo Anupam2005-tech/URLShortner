@@ -3,7 +3,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { loginuserHandle } from '../../connections';
 import { useNavigate } from "react-router-dom";
 
-const frontendURL = import.meta.env.VITE_FRONTEND_UR;
+const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 
 type LoginFormInputs = {
   email: string;

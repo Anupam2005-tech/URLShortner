@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { CreateUserHandle } from "../../connections";
-const frontendURL = import.meta.env.VITE_FRONTEND_UR;
+const frontendURL = import.meta.env.VITE_FRONTEND_URL;
 type FormValues = {
   name: string;
   email: string;
