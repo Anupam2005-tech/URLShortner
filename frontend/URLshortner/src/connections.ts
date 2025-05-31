@@ -1,3 +1,8 @@
+import dotenv from 'dotenv'
+dotenv.config()
+
+const backendURL=import.meta.env.BACKENDURL
+
 interface UserPrototype {
   name: string;
   email: string;
@@ -26,7 +31,7 @@ export async function CreateUserHandle(payload: UserPrototype): Promise<CreateUs
     formData.append("email", payload.email);
     formData.append("password", payload.password);
 
-    const response = await fetch("http://localhost:8000/user/create", {
+    const response = await fetch(`${backendURL}user/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -50,7 +55,7 @@ export async function loginuserHandle(payload: LoginPrototype): Promise<LoginUse
     formData.append("email", payload.email);
     formData.append("password", payload.password);
 
-    const response = await fetch("http://localhost:8000/user/login", {
+    const response = await fetch(`${backendURL}user/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -78,7 +83,7 @@ export async function URLshortnerHandle(
     const formData = new URLSearchParams();
     formData.append("url", redirectURL);
 
-    const response = await fetch("http://localhost:8000/url", {
+    const response = await fetch(`${backendURL}/url`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -111,7 +116,7 @@ export async function URLanalyticsHandle(): Promise<
   { slNo: number; shortId: string; url: string; createdAt: string; clicks: number }[] | string | number
 > {
   try {
-    const response = await fetch("http://localhost:8000/url/analytics", {
+    const response = await fetch(`${backendURL}/url/analytics`, {
       method: "GET",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
