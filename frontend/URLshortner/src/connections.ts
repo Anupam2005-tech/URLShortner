@@ -1,7 +1,4 @@
-import dotenv from 'dotenv'
-dotenv.config()
-
-const backendURL=import.meta.env.BACKENDURL
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 interface UserPrototype {
   name: string;
