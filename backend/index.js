@@ -4,15 +4,13 @@ const Userrouter = require("./routers/Usersrouters");
 const { mongoDBconnect } = require("./MongoDB");
 const cors = require("cors");
 const { urlencoded, cookieParser, checkSession } = require("./services/middleware");
-
+const dotenv=require('dotenv')
 const app = express();
+dotenv.config()
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://quicklink-liard.vercel.app"
-    ],
+    origin:process.env.origin ,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type"],
@@ -31,7 +29,7 @@ app.use("/user", Userrouter);
 
 mongoDBconnect(process.env.mongodbURL)
   .then(() => {
-    console.log("✅ MongoDB connected");
+    console.log(" MongoDB connected");
   })
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err);
