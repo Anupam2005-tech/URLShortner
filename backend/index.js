@@ -7,23 +7,18 @@ const { urlencoded, cookieParser, checkSession } = require("./services/middlewar
 
 const app = express();
 
-// === CORS CONFIGURATION ===
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",               // Local Dev
-      "https://quicklink-liard.vercel.app"   // Deployed Frontend
+      "http://localhost:5173",
+      "https://quicklink-liard.vercel.app"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
+    credentials: true,
+    allowedHeaders: ["Content-Type"],
   })
 );
 
-// === LOG INCOMING REQUESTS (OPTIONAL, FOR DEBUGGING) ===
-app.use((req, res, next) => {
-  console.log(`[${req.method}] ${req.path} from ${req.headers.origin}`);
-  next();
-});
 
 app.use(urlencoded);
 app.use(cookieParser);
