@@ -3,7 +3,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { loginuserHandle } from '../../connections';
 import { useNavigate } from "react-router-dom";
 
-const frontendURL = import.meta.env.VITE_FRONTEND_URL;
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 type LoginFormInputs = {
   email: string;
@@ -49,7 +49,7 @@ const LoginForm: React.FC = () => {
         <div className="w-full max-w-md">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Welcome Back!</h2>
           <p className="text-sm text-gray-600 mb-6">
-            Don’t have an account? <a href={`${frontendURL}/register`} className="text-blue-600 font-medium hover:underline">Create a new account now</a>, it’s FREE! Takes less than a minute.
+            Don’t have an account? <a href={`${backendURL}/register`} className="text-blue-600 font-medium hover:underline">Create a new account now</a>, it’s FREE! Takes less than a minute.
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
