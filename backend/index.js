@@ -6,9 +6,7 @@ const cors = require("cors");
 const { urlencoded, cookieParser, checkSession } = require("./services/middleware");
 const cluster = require("node:cluster");
 const os = require("os");
-const dotenv=require('dotenv')
 
-dotenv.config()
 const PORT = process.env.PORT;
 
 const totalCPUs = os.cpus().length;
@@ -23,7 +21,10 @@ if (cluster.isPrimary) {
 
   // CORS
   app.use(cors({
-    origin: process.env.origin,
+    origin:[
+        "http://localhost:5173",
+  "https://quicklink-liard.vercel.app"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
   }));
