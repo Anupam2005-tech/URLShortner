@@ -4,47 +4,46 @@ const Userrouter = require("./routers/Usersrouters");
 const { mongoDBconnect } = require("./MongoDB");
 const cors = require("cors");
 const { urlencoded, cookieParser, checkSession } = require("./services/middleware");
-const cluster = require("node:cluster");
-const os = require("os");
 
-const PORT = process.env.PORT;
+const app = express();
 
-const totalCPUs = os.cpus().length;
-
-if (cluster.isPrimary) {
-
-  for (let i = 0; i < totalCPUs; i++) {
-    cluster.fork();
-  }
-} else {
-  const app = express();
-
-  // CORS
-  app.use(cors({
-    origin:[
-        "http://localhost:5173",
-  "https://quicklink-liard.vercel.app"
+// === CORS CONFIGURATION ===
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",               // Local Dev
+      "https://quicklink-liard.vercel.app"   // Deployed Frontend
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
-  }));
+  })
+);
 
-  // MIDDLEWARES
-  app.use(urlencoded);
-  app.use(cookieParser);
+// === LOG INCOMING REQUESTS (OPTIONAL, FOR DEBUGGING) ===
+app.use((req, res, next) => {
+  console.log(`[${req.method}] ${req.path} from ${req.headers.origin}`);
+  next();
+});
 
-  app.use("/url", checkSession, URLrouter);
-  app.use("/user", Userrouter);
+app.use(urlencoded);
+app.use(cookieParser);
 
-  mongoDBconnect(process.env.mongodbURL)
-    .then(() => {
-      console.log("MongoDB connected");
-    })
-    .catch((err) => {
-      console.error("MongoDB connection error:", err);
-    });
 
-  app.listen(PORT, () => {
-    console.log(` started and server running on port `);
+app.use("/url", checkSession, URLrouter);
+app.use("/user", Userrouter);
+
+
+
+mongoDBconnect(process.env.mongodbURL)
+  .then(() => {
+    console.log("✅ MongoDB connected");
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
   });
-}
+
+
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(` Server running on port ${PORT}`);
+});
