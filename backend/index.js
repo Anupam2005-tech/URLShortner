@@ -6,8 +6,10 @@ const cors = require("cors");
 const { urlencoded, cookieParser, checkSession } = require("./services/middleware");
 const cluster = require("node:cluster");
 const os = require("os");
+const dotenv=require('dotenv')
 
-const PORT = 8000;
+dotenv.config()
+const PORT = process.env.PORT;
 
 const totalCPUs = os.cpus().length;
 
@@ -21,7 +23,7 @@ if (cluster.isPrimary) {
 
   // CORS
   app.use(cors({
-    origin: "http://localhost:5173",
+    origin: process.env.origin,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
   }));
@@ -33,7 +35,7 @@ if (cluster.isPrimary) {
   app.use("/url", checkSession, URLrouter);
   app.use("/user", Userrouter);
 
-  mongoDBconnect("mongodb://localhost:27017/shortURL")
+  mongoDBconnect(process.env.mongodbURL)
     .then(() => {
       console.log("MongoDB connected");
     })

@@ -3,7 +3,6 @@ const cookieParser = require("cookie-parser");
 const { getUser } = require("../services/cookies");
 
 function checkSession(req, res, next) {
-  console.log("checkSession middleware called");
   try {
     const token = req.cookies.token;
 
