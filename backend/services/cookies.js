@@ -1,6 +1,10 @@
 const jwt = require("jsonwebtoken");
+const dotenv=require('dotenv')
 
-const secret_key = "wg7v8cte7386bxure76r7vjvufufvh79849ajvt83t15236b";
+dotenv.config()
+const secret_key =process.env.secret_key;
+
+
 
 function setUser(user) {
   if (!user || !user._id || !user.email) {

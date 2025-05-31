@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRightCircle, Menu } from 'lucide-react';
 
@@ -22,18 +22,25 @@ const Dashboard = () => {
     <div className="min-h-screen flex flex-col bg-gradient-to-tr from-sky-50 via-white to-blue-100 text-gray-800 font-sans">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md shadow-md px-6 py-4 flex justify-between items-center sticky top-0 z-20 rounded-b-xl">
-        <div className="flex items-center gap-4">
-          {/* Mobile Toggle - Now on the left */}
-          <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
-            <Menu className="w-6 h-6 text-blue-600" />
-          </button>
+      <div className="flex items-center gap-4">
+  {/* Mobile Toggle - Now on the left */}
+  <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
+    <Menu className="w-6 h-6 text-blue-600" />
+  </button>
 
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <img src="/logo-removebg-preview.png" alt="Logo" className="w-10 h-10 object-contain" />
-            <span className="text-2xl font-bold text-sky-600 tracking-wide">QuickLink</span>
-          </div>
-        </div>
+  {/* Logo */}
+  <Link to="/" className="flex items-center gap-3">
+    <img
+      src="/logo-removebg-preview.png"
+      alt="Logo"
+      className="w-10 h-10 object-contain"
+    />
+    <span className="text-2xl font-bold text-sky-600 tracking-wide">
+      QuickLink
+    </span>
+  </Link>
+</div>
+
 
         {/* Desktop Menu */}
         <nav className="hidden md:flex items-center gap-5 text-sm font-medium">
