@@ -70,7 +70,10 @@ export async function loginuserHandle(payload: LoginPrototype): Promise<LoginUse
 
 // url shorten handle
 
-export async function URLshortnerHandle(redirectURL: string): Promise<{ shortId: string }> {
+export async function URLshortnerHandle(
+  redirectURL: string,
+  navigate: (path: string) => void
+): Promise<{ shortId: string; error?: string }> {
   try {
     const formData = new URLSearchParams();
     formData.append("url", redirectURL);
@@ -84,11 +87,51 @@ export async function URLshortnerHandle(redirectURL: string): Promise<{ shortId:
       body: formData.toString(),
     });
 
-    const result = await response.json();
+    if (response.status === 401) {
+      navigate("/user/login");
+      return { shortId: "", error: "Unauthorized. Redirecting to login." };
+    }
 
- 
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      return {
+        shortId: "",
+        error: errorBody.message || `Error: ${response.statusText}`,
+      };
+    }
+
+    const result = await response.json();
     return { shortId: result.id };
   } catch (err) {
-    return { shortId: "Error: could not generate URL" };
+    return { shortId: "", error: "Network error or server unreachable." };
   }
 }
+
+export async function URLanalyticsHandle(): Promise<
+  { slNo: number; shortId: string; url: string; createdAt: string; clicks: number }[] | string | number
+> {
+  try {
+    const response = await fetch("http://localhost:8000/url/analytics", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      credentials: "include",
+    });
+
+    if (response.status === 401) {
+      return 401; 
+    }
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch analytics.");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err: any) {
+    return `Error: ${err.message}`;
+  }
+}
+
+

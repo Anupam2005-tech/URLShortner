@@ -9,6 +9,7 @@ const {
 
 async function shortURLHandler(req, res) {
   const body = req.body;
+  const userId =getUser( req.cookies.token);
 
   if (!body.url) {
     return res.status(400).json({ error: "redirect url not given" });
@@ -17,9 +18,10 @@ async function shortURLHandler(req, res) {
   const shortId = shortid.generate();
 
   await URL.create({
-    shortId: shortId,
+    shortId,
     url: body.url,
     visitHistory: [],
+    createdBy: userId,
   });
 
   return res.json({ id: shortId });
@@ -45,21 +47,31 @@ async function webHandle(req, res) {
 
 async function analyticsHandle(req, res) {
   try {
-    const shortId = req.params.shortId;
-    const result = await URL.findOne({ shortId });
+    const userId =getUser( req.cookies.token);
 
-    if (!result) {
-      return res.status(404).json({ error: "Short URL not found" });
+    const urls = await URL.find({ createdBy: userId }).sort({ createdAt: -1 });
+
+    if (!urls) {
+      return res.status(404).json({ error: "No URLs found for this user" });
     }
-
-    return res.json({
-      totalClicks: result.visitHistory.length,
-      analytics: result.visitHistory,
-    });
+    else if (!userId){
+       return res.status(401).json({ msg: `unauthorized `,redirectTo:'/user/login' });
+    }
+    res.json(
+      urls.map((u, i) => ({
+        slNo: i + 1,
+        shortId: u.shortId,
+        url: u.url,
+        createdAt: u.createdAt,
+        clicks: u.visitHistory.length,
+      }))
+    );
   } catch (error) {
+    console.error("Analytics error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 
 // user auth
 async function createuserHandle(req, res) {
@@ -99,9 +111,9 @@ async function fetchuserHandler(req, res) {
       return res.status(401).json({ msg: "Invalid email or password." });
     } else {
       const token = setUser(userQuery);
-      res.cookie("token", token, { httpOnly: true });
+      res.cookie("token", token);
       
-      return res.json({ msg: ` login successfully`,redirectTo:'/url' });
+      return res.json({ msg: ` login successfully`,redirectTo:'/' });
     }
   } catch (err) {
     return res.json({ msg: `some error occured while fetching user  ${err}` });

@@ -6,8 +6,9 @@ const URLrouter = express.Router();
 
 // URL ROUTES
 URLrouter.post('/',checkSession, shortURLHandler);
+URLrouter.get('/analytics',checkSession,analyticsHandle)
 URLrouter.get('/:shortId',checkSession,webHandle)
-URLrouter.get('/analytics/:shortId',checkSession,analyticsHandle)
+
 
 
 module.exports = URLrouter;

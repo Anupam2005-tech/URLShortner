@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+
 const URLSchema = new mongoose.Schema(
   {
     shortId: {
@@ -17,6 +18,11 @@ const URLSchema = new mongoose.Schema(
         timeStamp: { type: Number },
       },
     ],
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "usersData", 
+      required: true,
+    },
   },
   { timestamps: true }
 );
