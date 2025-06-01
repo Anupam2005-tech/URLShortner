@@ -27,14 +27,14 @@ app.get("/"),(req,res)=>{
   return res.end('hello')
 }
 
-mongoDBconnect(process.env.mongodbURL)
-  .then(() => {
-    console.log(" MongoDB connected");
+// mongoDBconnect(process.env.mongodbURL)
+//   .then(() => {
+//     console.log(" MongoDB connected");
    
-  })
-  .catch((err) => {
-    console.error("❌ MongoDB connection error:", err);
-  });
+//   })
+//   .catch((err) => {
+//     console.error("❌ MongoDB connection error:", err);
+//   });
 
 const PORT = process.env.PORT || 8000;
 if (process.env.NODE_ENV !== 'production') {
