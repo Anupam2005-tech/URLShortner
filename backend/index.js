@@ -23,6 +23,10 @@ app.use(express.json());
 app.use("/url", checkSession, URLrouter);
 app.use("/user", Userrouter);
 
+app.get("/"),(req,res)=>{
+  return res.end('hello')
+}
+
 mongoDBconnect(process.env.mongodbURL)
   .then(() => {
     console.log(" MongoDB connected");
