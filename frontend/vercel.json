@@ -1,9 +1,8 @@
 {
-    "rewrites": [
-      {
-        "source": "/(.*)",
-        "destination": "/index.html"
-      }
-    ]
-  }
-  
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://url-shortner-backend-orcin.vercel.app/api/$1"
+    }
+  ]
+}
