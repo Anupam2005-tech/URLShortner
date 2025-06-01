@@ -25,7 +25,7 @@ function checkSession(req, res, next) {
 }
 
 module.exports = {
-  urlencoded: express.urlencoded({ extended: false }),
+  urlencoded: express.urlencoded({ extended: true }),
   cookieParser: cookieParser(),
   checkSession,
 };

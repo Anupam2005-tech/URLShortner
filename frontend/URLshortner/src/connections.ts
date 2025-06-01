@@ -39,7 +39,7 @@ export async function CreateUserHandle(payload: UserPrototype): Promise<CreateUs
     const result = await response.json();
     return result;
   } catch (err) {
-    return {msg:"An error occurred while creating user."};
+    return {msg:`An error occurred while creating user. `};
   }
 }
 

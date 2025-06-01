@@ -3,19 +3,21 @@ const URLrouter = require("./routers/URLrouters");
 const Userrouter = require("./routers/Usersrouters");
 const { mongoDBconnect } = require("./MongoDB");
 const cors = require("cors");
-const { urlencoded, cookieParser, checkSession } = require("./services/middleware");
+const { urlencoded ,cookieParser, checkSession } = require("./services/middleware");
 const dotenv=require('dotenv')
 const app = express();
 dotenv.config()
 
 app.use(cors({
-  origin: process.env.ORIGIN, 
+  origin: "*", 
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 app.use(urlencoded);
 app.use(cookieParser);
+app.use(express.json());
+
 
 
 app.use("/url", checkSession, URLrouter);
