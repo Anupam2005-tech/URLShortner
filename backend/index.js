@@ -8,12 +8,7 @@ const dotenv=require('dotenv')
 const app = express();
 dotenv.config()
 
-app.use(cors({
-  origin: process.env.origin,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+app.use(cors());
 
 
 app.use(urlencoded);
