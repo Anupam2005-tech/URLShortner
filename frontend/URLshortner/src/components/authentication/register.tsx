@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CreateUserHandle } from "../../connections";
-const frontendURL = import.meta.env.VITE_FRONTEND_URL;
+
 type FormValues = {
   name: string;
   email: string;
@@ -120,9 +120,7 @@ const RegistrationForm: React.FC = () => {
 
           <p className="text-sm text-gray-600 mt-6 text-center">
             Already have an account?{" "}
-            <a href={`${frontendURL}/user/login`} className="text-indigo-600 font-medium hover:underline">
-              Login here
-            </a>
+            <Link to={'/user/login'}className="text-indigo-600 font-sm"  >Login Here</Link>
           </p>
         </div>
       </div>
