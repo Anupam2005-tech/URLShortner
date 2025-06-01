@@ -67,11 +67,29 @@ async function analyticsHandle(req, res) {
       }))
     );
   } catch (error) {
-    console.error("Analytics error:", error);
+
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+async function analyticsDeleteHandle(req, res) {
+  try {
+    const userId = getUser(req.cookies.token);
 
+    if (!userId) {
+      return res.status(401).json({ msg: "Unauthorized" });
+    }
+
+    const result = await URL.deleteMany({ createdBy: userId });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ msg: "No URLs to delete" });
+    }
+
+    return res.status(200).json({ msg: "URLs deleted successfully" });
+  } catch (err) {
+    return res.status(500).json({ msg: "Error occurred while deleting the analytics" });
+  }
+}
 
 // user auth
 async function createuserHandle(req, res) {
@@ -183,4 +201,5 @@ module.exports = {
   fetchuserHandler,
   deleteuserHandle,
   updateuserHandle,
+  analyticsDeleteHandle
 };
