@@ -6,10 +6,10 @@ const cors = require("cors");
 const { urlencoded, cookieParser, checkSession } = require("./services/middleware");
 const dotenv=require('dotenv')
 const app = express();
-dotenv.config()
+dotenv.config() 
 
 app.use(cors({
-  origin: process.env.origin,
+  origin: process.env.origin ||"https://quicklink-liard.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
