@@ -8,14 +8,12 @@ const dotenv=require('dotenv')
 const app = express();
 dotenv.config()
 
-app.use(
-  cors({
-    origin:process.env.origin ,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-    allowedHeaders: ["Content-Type"],
-  })
-);
+app.use(cors({
+  origin: process.env.origin,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
 
 app.use(urlencoded);
@@ -37,6 +35,10 @@ mongoDBconnect(process.env.mongodbURL)
 
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-  console.log(` Server running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+}
+
+module.exports=app

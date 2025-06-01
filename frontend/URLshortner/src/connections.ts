@@ -52,7 +52,7 @@ export async function loginuserHandle(payload: LoginPrototype): Promise<LoginUse
     formData.append("email", payload.email);
     formData.append("password", payload.password);
 
-    const response = await fetch(`${backendURL}user/login`, {
+    const response = await fetch(`${backendURL}/user/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -64,8 +64,8 @@ export async function loginuserHandle(payload: LoginPrototype): Promise<LoginUse
     const result = await response.json();
     return result; 
   } catch (err: any) {
-    console.error("Login failed:", err);
-    return err.message;
+    return { msg: "Login failed"};
+
   }
 }
 
@@ -115,9 +115,6 @@ export async function URLanalyticsHandle(): Promise<
   try {
     const response = await fetch(`${backendURL}/url/analytics`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
       credentials: "include",
     });
 

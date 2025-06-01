@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://url-shortner-backend-orcin.vercel.app/api/$1"
+      "destination": "https://url-shortner-backend-orcin.vercel.app/$1"
     }
   ]
 }
