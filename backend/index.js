@@ -9,7 +9,7 @@ const app = express();
 dotenv.config() 
 
 app.use(cors({
-  origin: process.env.origin ||"https://quicklink-liard.vercel.app",
+  origin: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
