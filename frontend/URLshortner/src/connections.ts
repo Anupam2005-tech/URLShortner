@@ -28,7 +28,7 @@ export async function CreateUserHandle(payload: UserPrototype): Promise<CreateUs
     formData.append("email", payload.email);
     formData.append("password", payload.password);
 
-    const response = await fetch(`${backendURL}/user/create`, {
+    const response = await fetch(`${backendURL}/user/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
