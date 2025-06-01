@@ -4,11 +4,12 @@ const Userrouter = require("./routers/Usersrouters");
 const { mongoDBconnect } = require("./MongoDB");
 const cors = require("cors");
 const { urlencoded, cookieParser, checkSession } = require("./services/middleware");
+const dotenv=require('dotenv')
 const app = express();
-
+dotenv.config()
 
 app.use(cors({
-  origin: "https://quicklink-liard.vercel.app",
+  origin: process.env.origin,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
