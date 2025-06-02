@@ -133,7 +133,12 @@ async function fetchuserHandler(req, res) {
       return res.status(401).json({ msg: "Invalid email or password." });
     } else {
       const token = setUser(userQuery);
-      res.cookie("token", token);
+      res.cookie("token", token,{
+        httpOnly:true,
+        sameSite:'None',
+        secure:process.env.NODE_ENV === 'production',
+        maxAge: 48 * 60 * 60 * 1000,
+      });
       
       return res.status(201).json({ msg: ` login successfully`,redirectTo:'/' });
     }
