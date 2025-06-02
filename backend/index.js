@@ -25,6 +25,7 @@ app.use("/user", Userrouter);
 app.get("/", (req, res) => {
   return res.json('hello');
 });
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 const PORT = process.env.PORT || 8000;
 
