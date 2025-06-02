@@ -5,7 +5,7 @@ const { setUser, getUser } = require("../services/cookies");
 const {
   hashedPassword,
   checkHashPassword,
-  hashedPassword,
+  
   
 } = require("../services/hashpassword");
 
