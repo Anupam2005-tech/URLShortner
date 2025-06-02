@@ -70,6 +70,8 @@ export async function loginuserHandle(payload: LoginPrototype): Promise<LoginUse
 }
 
 
+
+
 // url shorten handle
 
 export async function URLshortnerHandle(
@@ -119,7 +121,7 @@ export async function URLanalyticsHandle(): Promise<
     });
 
     if (response.status === 401) {
-      return 401; 
+      return `unauthorized`; 
     }
 
     if (!response.ok) {
@@ -134,3 +136,18 @@ export async function URLanalyticsHandle(): Promise<
 }
 
 
+// export async function analyticsDeleteHandle(){
+//  try{
+//   const response=fetch(`${backendURL}/url/analytics/delete`,{
+//     method:'DELETE',
+//     credentials:"include",
+//   })
+//   if( response.status===401){
+//     return `unauthorized`
+//   }
+//   else if 
+//  }
+//  catch(err:any){
+//   return `Error while deleting the analytics`
+//  }
+// }

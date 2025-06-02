@@ -112,7 +112,9 @@ async function createuserHandle(req, res) {
     });
     return res.status(201).json({ msg: `account created successfully ! `,redirectTo:'/user/login' });
   } catch (err) {
-    return res.status(500).json(err);
+   
+return res.status(500).json({ msg: "Internal server error" });
+
   }
 }
 
@@ -124,7 +126,7 @@ async function fetchuserHandler(req, res) {
     }
     const userQuery = await users.findOne({ email });
     if (!userQuery) {
-      return res.json({ msg: "Invalid email or password " });
+      return res.status(401).json({ msg: "Invalid email or password " });
     }
     const passwordMatch = await checkHashPassword(password, userQuery.password);
     if (!passwordMatch) {
@@ -133,7 +135,7 @@ async function fetchuserHandler(req, res) {
       const token = setUser(userQuery);
       res.cookie("token", token);
       
-      return res.json({ msg: ` login successfully`,redirectTo:'/' });
+      return res.status(201).json({ msg: ` login successfully`,redirectTo:'/' });
     }
   } catch (err) {
     return res.json({ msg: `some error occured while fetching user  ${err}` });
@@ -145,7 +147,7 @@ async function deleteuserHandle(req, res) {
     const user = getUser(req.cookies.token);
 
     if (!user) {
-      return res.status(401).json({ msg: "Unauthorized access" });
+      return res.status(401).json({ msg: "Unauthorized " });
     } else {
       const deleteUser = await users.findByIdAndDelete(user._id);
       if (!deleteUser) {
@@ -168,13 +170,13 @@ async function updateuserHandle(req, res) {
     }
 
     const { newName, newEmail, newPassword } = req.body;
-    const passwordhashing=hashedPassword(newPassword)
+    const passwordhashing= await hashedPassword(newPassword)
     const updatedUser = await users.findOneAndUpdate(
       { _id: user._id },
       {
         name: newName,
         email: newEmail,
-        password: await passwordhashing,
+        password:  passwordhashing,
       },
       { new: true }
     );
