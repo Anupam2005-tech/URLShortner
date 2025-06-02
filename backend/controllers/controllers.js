@@ -5,6 +5,7 @@ const { setUser, getUser } = require("../services/cookies");
 const {
   hashedPassword,
   checkHashPassword,
+  hashedPassword,
   
 } = require("../services/hashpassword");
 
@@ -167,13 +168,13 @@ async function updateuserHandle(req, res) {
     }
 
     const { newName, newEmail, newPassword } = req.body;
-
+    const passwordhashing=hashedPassword(newPassword)
     const updatedUser = await users.findOneAndUpdate(
       { _id: user._id },
       {
         name: newName,
         email: newEmail,
-        password: newPassword,
+        password: await passwordhashing,
       },
       { new: true }
     );

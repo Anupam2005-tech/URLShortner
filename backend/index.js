@@ -23,24 +23,25 @@ app.use(express.json());
 app.use("/url", checkSession, URLrouter);
 app.use("/user", Userrouter);
 
-app.get("/"),(req,res)=>{
-  return res.end('hello')
-}
+app.get("/",(req,res)=>{
+  return res.json('hello')
+})
 
-// mongoDBconnect(process.env.mongodbURL)
-//   .then(() => {
-//     console.log(" MongoDB connected");
+mongoDBconnect(process.env.mongodbURL
+)
+  .then(() => {
+    console.log(" MongoDB connected");
    
-//   })
-//   .catch((err) => {
-//     console.error("❌ MongoDB connection error:", err);
-//   });
+  })
+  .catch((err) => {
+    console.error(" MongoDB connection error:", err);
+  });
 
 const PORT = process.env.PORT || 8000;
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
     
-    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(` Server running on port ${PORT}`);
   });
 }
 
