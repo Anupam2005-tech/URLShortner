@@ -90,9 +90,7 @@ const Dashboard = () => {
         titleColor="text-red-600"
         msg={Msg}
       />
-      {isLoading && (
- <QuickLinkLoader/>
-)}
+
 
       <div className="min-h-screen flex flex-col bg-gradient-to-tr from-sky-50 via-white to-blue-100 text-gray-800 font-sans">
         {/* Header */}
