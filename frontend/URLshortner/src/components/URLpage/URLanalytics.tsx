@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { URLanalyticsHandle } from "../../connections";
-
+import { URLanalyticsHandle, analyticsDeleteHandle } from "../../connections";
+import trash from '../../assets/trash.svg'
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import QuickLinkLoader from "../utils/loader";
+import { checkLoadingIn, checkLoadingOut } from "../../redux/slice/usersSlice/usersSlice";
+import Popup from "../utils/Popup";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
+import deleteTrash from '../../assets/deleteTrash.svg'
 interface AnalyticsData {
   slNo: number;
   shortId: string;
@@ -11,42 +17,77 @@ interface AnalyticsData {
 }
 
 const URLanalytics: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const isloading = useAppSelector(state => state.loading.isLoadingIn);
   const [data, setData] = useState<AnalyticsData[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
-
+  const [Open,setOpen]=useState(false)
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function fetchData() {
-      const result = await URLanalyticsHandle();
+  async function fetchData() {
+    dispatch(checkLoadingIn());
+    const result = await URLanalyticsHandle();
 
-      if (result === 401) {
-        navigate("/user/login");
-        return;
-      }
-
-      if (typeof result === "string") {
-        setError(result);
-      } else if (Array.isArray(result)) {
-        setData(result);
-      }
-      setLoading(false);
+    if (typeof result === "string") {
+      setError(result);
+    } else if (Array.isArray(result)) {
+      setData(result);
+      setError("");
     }
+    dispatch(checkLoadingOut());
+  }
 
+  useEffect(() => {
     fetchData();
   }, [navigate]);
 
+  async function deleteAnalytics() {
+    dispatch(checkLoadingIn());
+    await analyticsDeleteHandle();
+    await fetchData();
+    dispatch(checkLoadingOut());
+  }
+
+  // Render loader first to cover full screen if loading
+  if (isloading) {
+    return <QuickLinkLoader />;
+  }
+
   return (
+
+ <>
+   <Popup
+        title="Delete Analytics"
+        content={`${deleteTrash}`}
+        firstOption="Cancel"
+        secondOption="Delete All"
+        isOpen={Open}
+        onclose={() => setOpen(false)}
+        onfirstOption={()=>{setOpen(false)}}
+        onsecondOption={deleteAnalytics}
+        firstOptionColor="bg-gray-300"
+        firstOptionTextColor="text-black"
+        firstOptionHoverColor="hover:bg-gray-400"
+        secondOptionColor="bg-red-600"
+        secondOptionHoverColor="hover:bg-red-700"
+        titleColor="text-red-600"
+      />
     <div className="min-h-screen bg-gray-100 py-10 px-4 md:px-10">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-4xl font-extrabold mb-8 text-center text-sky-700">
+        <h2 className="text-4xl font-extrabold mb-6 text-center text-sky-700">
           Your URL Analytics
         </h2>
 
-        {loading ? (
-          <p className="text-center text-gray-600 text-lg">Loading...</p>
-        ) : error ? (
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => setOpen(true)}
+            className="bg-[#f75c5c] py-2 px-4 rounded-lg hover:cursor-pointer hover:bg-red-600 flex font-bold text-white space-x-1"
+          >
+            <span>Delete All</span><img src={trash} alt="delete" />
+          </button>
+        </div>
+
+        {error ? (
           <p className="text-center text-red-600 text-lg">{error}</p>
         ) : data.length === 0 ? (
           <p className="text-center text-gray-600 text-lg">No analytics data found.</p>
@@ -76,7 +117,7 @@ const URLanalytics: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-center max-w-sm truncate">
                       <a
-                        href={`http://localhost:8000/url/${item.shortId}`}
+                        href={`${backendURL}/url/${item.shortId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-500 hover:underline"
@@ -97,7 +138,7 @@ const URLanalytics: React.FC = () => {
           </div>
         )}
       </div>
-    </div>
+    </div></>
   );
 };
 

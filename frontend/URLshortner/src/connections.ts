@@ -10,18 +10,33 @@ interface CreateUserResponse {
   redirectTo?: string;
 }
 
-interface LoginPrototype{
-  email:string,
-  password:string
+interface LoginPrototype {
+  email: string;
+  password: string;
+}
+interface UpdateUserPayload {
+  newName?: string;
+  newEmail?: string;
+  newPassword?: string;
 }
 
-interface LoginUserResponse{
+interface UpdateUserResponse {
+  msg: string;
+  user?: any;
+}
+
+interface LoginUserResponse {
+  msg: string;
+  redirectTo?: string;
+}
+interface deleteUserResponse{
   msg:string
-  redirectTo?:string
 }
 
 // create user handle
-export async function CreateUserHandle(payload: UserPrototype): Promise<CreateUserResponse> {
+export async function CreateUserHandle(
+  payload: UserPrototype
+): Promise<CreateUserResponse> {
   try {
     const formData = new URLSearchParams();
     formData.append("name", payload.name);
@@ -39,14 +54,15 @@ export async function CreateUserHandle(payload: UserPrototype): Promise<CreateUs
     const result = await response.json();
     return result;
   } catch (err) {
-    return {msg:`An error occurred while creating user. `};
+    return { msg: `An error occurred while creating user. ` };
   }
 }
 
+// login user handle
 
-// login user handle 
-
-export async function loginuserHandle(payload: LoginPrototype): Promise<LoginUserResponse> {
+export async function loginuserHandle(
+  payload: LoginPrototype
+): Promise<LoginUserResponse> {
   try {
     const formData = new URLSearchParams();
     formData.append("email", payload.email);
@@ -57,21 +73,77 @@ export async function loginuserHandle(payload: LoginPrototype): Promise<LoginUse
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      credentials: "include", 
+      credentials: "include",
       body: formData.toString(),
     });
 
     const result = await response.json();
-    return result; 
+    return result;
   } catch (err: any) {
-    return { msg: "Login failed"};
-
+    return { msg: "Login failed" };
+  }
+}
+export async function updateUserHandle(payload:UpdateUserPayload):Promise<UpdateUserResponse> {
+  try {
+    const formData=new URLSearchParams()
+    if(payload.newEmail){
+      formData.append("newEmail",payload.newEmail)
+    }
+    if(payload.newName){
+      formData.append("newName",payload.newName)
+    }
+    if(payload.newPassword){
+      formData.append("newPassword",payload.newPassword)
+    }
+    const response = await fetch(`${backendURL}/user/update`, {
+      method: "PUT",
+      credentials: "include",
+      headers:{
+        "Content-Type":  "application/x-www-form-urlencoded",
+      },
+      body:formData.toString()
+    });
+    if (!response.ok) {
+      return {msg:`Failed to update data`};
+    }
+    const result = await response.json();
+    return result;
+  } catch (err) {
+    return {msg:`Network error or server unreachable.`};
   }
 }
 
+export async function deleteUserHandle():Promise<deleteUserResponse> {
+  try {
+    const response = await fetch(`${backendURL}/user/delete`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    if (!response.ok) {
+      return {msg:`Failed to delete account`};
+    }
+    const result = await response.json();
+    return result;
+  } catch (err) {
+    return {msg:`Network error or server unreachable.`};
+  }
+}
 
-
-
+export async function logOutUserHandle(){
+ try{
+  const response=await fetch(`${backendURL}/user/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if(!response.ok){
+    return {msg:`Failed to LogOut `};
+  }
+  const result = await response.json();
+  return result;
+ }catch(err){
+  return {msg:`Network error or server unreachable.`};
+ }
+}
 // url shorten handle
 
 export async function URLshortnerHandle(
@@ -112,7 +184,15 @@ export async function URLshortnerHandle(
 }
 
 export async function URLanalyticsHandle(): Promise<
-  { slNo: number; shortId: string; url: string; createdAt: string; clicks: number }[] | string | number
+  | {
+      slNo: number;
+      shortId: string;
+      url: string;
+      createdAt: string;
+      clicks: number;
+    }[]
+  | string
+  | number
 > {
   try {
     const response = await fetch(`${backendURL}/url/analytics`, {
@@ -121,11 +201,11 @@ export async function URLanalyticsHandle(): Promise<
     });
 
     if (response.status === 401) {
-      return `unauthorized`; 
+      return `unauthorized`;
     }
 
     if (!response.ok) {
-      throw new Error("Failed to fetch analytics.");
+      return "Failed to fetch analytics.";
     }
 
     const data = await response.json();
@@ -135,19 +215,19 @@ export async function URLanalyticsHandle(): Promise<
   }
 }
 
-
-// export async function analyticsDeleteHandle(){
-//  try{
-//   const response=fetch(`${backendURL}/url/analytics/delete`,{
-//     method:'DELETE',
-//     credentials:"include",
-//   })
-//   if( response.status===401){
-//     return `unauthorized`
-//   }
-//   else if 
-//  }
-//  catch(err:any){
-//   return `Error while deleting the analytics`
-//  }
-// }
+export async function analyticsDeleteHandle() {
+  try {
+    const response = await fetch(`${backendURL}/url/analytics/delete`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    if (!response.ok) {
+      return "Failed to delete analytics";
+    } else {
+      const data = await response.json();
+      return data;
+    }
+  } catch (err: any) {
+    return `Network error or server unreachable.`;
+  }
+}

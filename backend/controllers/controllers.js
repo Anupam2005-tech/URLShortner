@@ -200,6 +200,18 @@ async function updateuserHandle(req, res) {
   }
 }
 
+async function userlogoutHandle(req,res){
+  try{
+    res.clearCookie('token',{
+      httpOnly: true,
+     secure:process.env.NODE_ENV === 'production',
+      sameSite:"None",
+    })
+    return res.status(200).json('logged Out successfully')
+  }catch(err){
+    return res.status(500).json({msg:`some error occurs while logging out`})
+  }
+}
 
 
 module.exports = {
@@ -210,5 +222,6 @@ module.exports = {
   fetchuserHandler,
   deleteuserHandle,
   updateuserHandle,
-  analyticsDeleteHandle
+  analyticsDeleteHandle,
+  userlogoutHandle
 };

@@ -1,1 +1,62 @@
 @import "tailwindcss";
+
+.greener-button {
+    background: linear-gradient(to right, #3B82F6, #2563EB, #1D4ED8);
+    color: white;
+    font-family: inherit;
+    padding: 0.35em;
+    padding-left: 1.2em;
+    font-size: 20px;
+    font-weight: 900;
+    border-radius: 0.9em;
+    border: none;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    height: 2.8em;
+    padding-right: 3.3em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+   
+  box-shadow: 0 8px 15px rgba(59, 130, 246, 0.4);
+  }
+  
+  .greener-button:hover {
+    background-color: linear-gradient(to right, #3B82F6, #2563EB, #1D4ED8); /* bright lime green on hover */
+  }
+  
+  .greener-button .icon {
+    background: white;
+    margin-left: 1em;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.2em;
+    width: 2.2em;
+    border-radius: 0.7em;
+    box-shadow: 0.1em 0.1em 0.6em 0.2em linear-gradient(to right, #3B82F6, #2563EB, #1D4ED8);
+    right: 0.3em;
+    transition: all 0.3s;
+  }
+  
+  .greener-button:hover .icon {
+    width: calc(100% - 0.6em);
+  }
+  
+  .greener-button .icon svg {
+    width: 1.1em;
+    transition: transform 0.3s;
+    color: linear-gradient(to right, #3B82F6, #2563EB, #1D4ED8);
+  }
+  
+  .greener-button:hover .icon svg {
+    transform: translateX(0.1em);
+  }
+  
+  .greener-button:active .icon {
+    transform: scale(0.95);
+  }
+  
