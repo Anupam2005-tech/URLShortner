@@ -4,7 +4,6 @@ import App from "./App.tsx";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { store } from "../src/redux/store.ts";
-import Popup from "./components/utils/Popup.tsx";
 
 
 createRoot(document.getElementById("root")!).render(
