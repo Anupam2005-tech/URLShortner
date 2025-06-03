@@ -6,7 +6,7 @@ async function mongoDBconnect(url) {
   return mongoose.connect(url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    connectTimeoutMS: 60000, // 60 seconds
+    connectTimeoutMS: 120000, 
   });
 }
 
