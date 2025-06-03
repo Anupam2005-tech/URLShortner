@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 async function mongoDBconnect(url) {
-  return mongoose.connect(url);
+  return mongoose.connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    connectTimeoutMS: 60000, // 60 seconds
+  });
 }
 
 module.exports = {
