@@ -1,6 +1,4 @@
-// Dashboard.tsx
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { ArrowRightCircle, Menu, User } from "lucide-react";
@@ -10,9 +8,7 @@ import {
 } from "../../redux/slice/auth/authSlice";
 import "../../App.css";
 import arrowsvg from "../../assets/arrow.svg";
-import Popup from "../utils/Popup";
 import deleteTrash from "../../assets/deleteTrash.svg";
-import Footer from "./footer/Footer";
 import {
   deleteUserHandle,
   logOutUserHandle,
@@ -22,7 +18,11 @@ import {
   checkLoadingIn,
   checkLoadingOut,
 } from "../../redux/slice/usersSlice/usersSlice";
-import QuickLinkLoader from "../utils/loader";
+
+// Lazy-loaded components
+const Popup = lazy(() => import("../utils/Popup"));
+const Footer = lazy(() => import("./footer/Footer"));
+const QuickLinkLoader = lazy(() => import("../utils/loader"));
 
 const Dashboard = () => {
   const [Open, setOpen] = useState(false);
@@ -80,41 +80,47 @@ const Dashboard = () => {
 
   return (
     <>
-      <Popup
-        title="Delete Account"
-        content={
-          <div>
-            <img
-              src={deleteTrash}
-              alt="Delete Icon"
-              className="w-20 mx-auto block"
-            />
-            <p className=" font-semibold font-sans">
-              Are you sure you want to permanently delete your QuickLink
-              account?
-            </p>
-          </div>
-        }
-        firstOption="Cancel"
-        secondOption="Delete"
-        isOpen={Open}
-        onclose={() => setOpen(false)}
-        onfirstOption={() => setOpen(false)}
-        onsecondOption={deleteUser}
-        firstOptionColor="bg-gray-300"
-        firstOptionTextColor="text-black"
-        firstOptionHoverColor="hover:bg-gray-400"
-        secondOptionColor="bg-red-600"
-        secondOptionHoverColor="hover:bg-red-700"
-        titleColor="text-red-600"
-        msg={Msg}
-      />
+      <Suspense fallback={<div />}>
+        <Popup
+          title="Delete Account"
+          content={
+            <div>
+              <img
+                src={deleteTrash}
+                alt="Delete Icon"
+                className="w-20 mx-auto block"
+              />
+              <p className=" font-semibold font-sans">
+                Are you sure you want to permanently delete your QuickLink
+                account?
+              </p>
+            </div>
+          }
+          firstOption="Cancel"
+          secondOption="Delete"
+          isOpen={Open}
+          onclose={() => setOpen(false)}
+          onfirstOption={() => setOpen(false)}
+          onsecondOption={deleteUser}
+          firstOptionColor="bg-gray-300"
+          firstOptionTextColor="text-black"
+          firstOptionHoverColor="hover:bg-gray-400"
+          secondOptionColor="bg-red-600"
+          secondOptionHoverColor="hover:bg-red-700"
+          titleColor="text-red-600"
+          msg={Msg}
+        />
+      </Suspense>
 
+      {isLoading ? (
+        <Suspense fallback={<div className="text-center p-10">Loading...</div>}>
+          <QuickLinkLoader />
+        </Suspense>
+      ) : (
         <div className="min-h-screen flex flex-col bg-gradient-to-tr from-sky-50 via-white to-blue-100 text-gray-800 font-sans">
           {/* Header */}
           <header className="bg-white/80 backdrop-blur-md shadow-md px-6 py-4 flex justify-between items-center sticky top-0 z-20 rounded-b-xl">
             <div className="flex items-center gap-4">
-              {/* Mobile Toggle */}
               <button
                 className="md:hidden"
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -122,7 +128,6 @@ const Dashboard = () => {
                 <Menu className="w-6 h-6 text-blue-600" />
               </button>
 
-              {/* Logo */}
               <Link to="/" className="flex items-center gap-3">
                 <img
                   src="/logo-removebg-preview.png"
@@ -135,7 +140,6 @@ const Dashboard = () => {
               </Link>
             </div>
 
-            {/* Desktop Menu */}
             <nav className="hidden md:flex items-center gap-5 text-sm font-medium relative">
               {!isLoggedIn && (
                 <Link
@@ -186,9 +190,7 @@ const Dashboard = () => {
                         Delete Account
                       </p>
                       <p
-                        onClick={() => {
-                          userLogout();
-                        }}
+                        onClick={() => userLogout()}
                         className="block px-4 py-2 text-sm hover:bg-sky-50 text-blue-700 font-bold cursor-pointer"
                       >
                         Log Out
@@ -206,7 +208,6 @@ const Dashboard = () => {
             </nav>
           </header>
 
-          {/* Mobile Menu */}
           {menuOpen && (
             <div className="md:hidden bg-white/90 backdrop-blur-md shadow-md px-6 py-4 space-y-4 relative z-10">
               {!isLoggedIn && (
@@ -242,7 +243,7 @@ const Dashboard = () => {
                   {accountOpen && (
                     <div className="w-full bg-white rounded-md border border-gray-200 shadow-md transition-all animate-fade-in">
                       <Link
-                        to="/account/update"
+                        to="/user/update"
                         className="block px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition"
                       >
                         Update Account
@@ -254,9 +255,7 @@ const Dashboard = () => {
                         Delete Account
                       </p>
                       <p
-                        onClick={() => {
-                          userLogout();
-                        }}
+                        onClick={() => userLogout()}
                         className="block px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition cursor-pointer"
                       >
                         Log Out
@@ -336,9 +335,12 @@ const Dashboard = () => {
               </p>
             </section>
           </main>
-          <Footer />
+
+          <Suspense fallback={<div className="text-center p-6">Loading footer...</div>}>
+            <Footer />
+          </Suspense>
         </div>
-    
+      )}
     </>
   );
 };

@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { loginuserHandle } from '../../connections';
 import { useNavigate, Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { checkLoadingIn, checkLoadingOut } from '../../redux/slice/usersSlice/usersSlice';
-import QuickLinkLoader from "../utils/loader";
+
+// Lazy load the loader component
+const QuickLinkLoader = lazy(() => import("../utils/loader"));
 
 type LoginFormInputs = {
   email: string;
@@ -15,8 +17,6 @@ const LoginForm: React.FC = () => {
   const [msg, setmsg] = useState('');
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
-  // Adjust this selector according to your Redux state structure!
   const isloading = useAppSelector(state => state.loading.isLoadingIn);
 
   const {
@@ -56,7 +56,9 @@ const LoginForm: React.FC = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 bg-white">
         <div className="w-full max-w-md">
           {isloading ? (
-            <QuickLinkLoader />
+            <Suspense fallback={<div className="text-center text-gray-600">Loading...</div>}>
+              <QuickLinkLoader />
+            </Suspense>
           ) : (
             <>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Welcome Back!</h2>
