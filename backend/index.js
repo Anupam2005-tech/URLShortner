@@ -10,11 +10,12 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin:process.env.ORIGIN ,
+  origin: process.env.ORIGIN,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
 app.use(urlencoded);
 app.use(cookieParser);
 app.use(express.json());
@@ -25,6 +26,7 @@ app.use("/user", Userrouter);
 app.get("/", (req, res) => {
   return res.json('hello');
 });
+
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 const PORT = process.env.PORT || 8000;
@@ -32,15 +34,15 @@ const PORT = process.env.PORT || 8000;
 const startServer = async () => {
   try {
     await mongoDBconnect(process.env.mongodbURL);
-    console.log(" MongoDB connected");
+    console.log("MongoDB connected");
 
-    if (process.env.NODE_ENV !== 'production') {
-      app.listen(PORT, () => {
-        console.log(` Server running on port ${PORT}`);
-      });
-    }
+    
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+
   } catch (err) {
-    console.error(" MongoDB connection error:", err);
+    console.error("MongoDB connection error:", err);
   }
 };
 
