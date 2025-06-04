@@ -33,7 +33,10 @@ interface deleteUserResponse{
   msg:string
 }
 interface UserAuthResponse{
-  msg:string
+  msg:string,
+  user?: {
+    name: any;
+  };
 }
 // create user handle
 export async function CreateUserHandle(
@@ -98,7 +101,13 @@ export async function userauthHandle():Promise<UserAuthResponse>{
       return {msg:`Failed to check Authentication`};
     }
     const result=await response.json()
-    return result
+    if(!result.user){
+     return {msg:'user'}  
+    }
+   return{
+    msg: result.msg,
+    user: result.user,
+   }
   }
   catch(err){
     return {msg:`Network error or server unreachable.`};

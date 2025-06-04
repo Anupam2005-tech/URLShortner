@@ -104,7 +104,6 @@ async function createuserHandle(req, res) {
       return res.status(409).json({ msg: `user already exist.` });
     }
     const hashedpasswordValue = await hashedPassword(password);
-    console.log("Hashed Password:", hashedpasswordValue);
     await users.create({
       name,
       email,
@@ -140,26 +139,41 @@ async function fetchuserHandler(req, res) {
         maxAge: 48 * 60 * 60 * 1000,
       });
       
-      return res.status(200).json({ msg: ` login successfully`,redirectTo:'/' });
+      return res.status(200).json({ msg: ` login successfully`,redirectTo:'/'});
     }
   } catch (err) {
-    return res.json({ msg: `some error occured while fetching user  ${err}` });
+    return res.json({ msg: `some error occured while fetching user ` });
   }
 }
 
-async function authCheckHandle(req,res){
-  try{
-    const checkForAuth= getUser(req.cookies.token)
-    if(!checkForAuth){
-      return res.status(401).json({msg:`unauthorized`})
+async function authCheckHandle(req, res) {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ msg: "Unauthorized: No token found" });
     }
-    else{
-      return res.status(200).json({msg:`user authorized`})
+
+    const checkForAuth = getUser(token); // must return decoded object like { email }
+    if (!checkForAuth || !checkForAuth.email) {
+      return res.status(401).json({ msg: "Unauthorized: Invalid token" });
     }
-  }catch(err){
-    return res.status(500).json({msg:`Internal server error`})
+
+    const { email } = checkForAuth;
+    const userQuery = await users.findOne({ email });
+
+    if (!userQuery) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    return res.status(200).json({
+      msg: "User authorized",
+      user: { name: userQuery.name },
+    });
+  } catch (err) {
+    return res.status(500).json({ msg: "Internal server error" });
   }
 }
+
 
 async function deleteuserHandle(req, res) {
   try {
