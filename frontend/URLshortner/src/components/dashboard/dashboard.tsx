@@ -12,7 +12,7 @@ import arrowsvg from "../../assets/arrow.svg";
 import Popup from "../utils/Popup";
 import deleteTrash from "../../assets/deleteTrash.svg";
 import Footer from "./footer/Footer";
-import { deleteUserHandle,logOutUserHandle } from "../../connections";
+import { deleteUserHandle, logOutUserHandle } from "../../connections";
 import {
   checkLoadingIn,
   checkLoadingOut,
@@ -24,11 +24,12 @@ const Dashboard = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [Msg, setMsg] = useState("");
+  const [isCheckingToken, setIsCheckingToken] = useState(true);
   const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
   const isLoggedIn = useAppSelector((state) => state.authentication.isloggedIn);
-  const isLoading=useAppSelector(state=>state.loading.isLoadingIn)
+
 
   useEffect(() => {
     const checklogIn = async () => {
@@ -38,9 +39,14 @@ const Dashboard = () => {
       } else {
         dispatch(checkUserloggedIn());
       }
+      setIsCheckingToken(false);
     };
     checklogIn();
   }, [dispatch]);
+
+  if (isCheckingToken) {
+    return <QuickLinkLoader />;
+  }
 
   async function deleteUser() {
     dispatch(checkLoadingIn());
@@ -57,19 +63,17 @@ const Dashboard = () => {
     }
   }
   async function userLogout() {
-    dispatch(checkLoadingIn())
-    try{
-      const result=await logOutUserHandle()
-      if(result){
+    dispatch(checkLoadingIn());
+    try {
+      const result = await logOutUserHandle();
+      if (result) {
         setTimeout(() => {
           navigate("/");
         }, 1000);
       }
+    } finally {
+      dispatch(checkLoadingOut());
     }
-    finally{
-      dispatch(checkLoadingOut())
-    }
-
   }
   return (
     <>
@@ -90,7 +94,6 @@ const Dashboard = () => {
         titleColor="text-red-600"
         msg={Msg}
       />
-
 
       <div className="min-h-screen flex flex-col bg-gradient-to-tr from-sky-50 via-white to-blue-100 text-gray-800 font-sans">
         {/* Header */}
@@ -119,7 +122,7 @@ const Dashboard = () => {
 
           {/* Desktop Menu */}
           <nav className="hidden md:flex items-center gap-5 text-sm font-medium relative">
-            {!isLoggedIn && (
+            {!isLoggedIn && !isCheckingToken ? (
               <>
                 <Link
                   to="/user/login"
@@ -134,51 +137,49 @@ const Dashboard = () => {
                   Register
                 </Link>
               </>
-            )}
-
-            {isLoggedIn && (
-              <Link
-                to="/url/analytics"
-                className="text-blue-700 font-bold text-md hover:text-blue-800 transition"
-              >
-                Analytics
-              </Link>
-            )}
-
-            {/* Show Account Dropdown only when logged in */}
-            {isLoggedIn && (
-              <div className="relative">
-                <button
-                  onClick={() => setAccountOpen(!accountOpen)}
-                  className="flex items-center gap-2 hover:bg-sky-50 hover:cursor-pointer text-blue-700 hover:text-blue-800 font-bold text-md"
+            ) : isLoggedIn && !isCheckingToken ? (
+              <>
+                <Link
+                  to="/url/analytics"
+                  className="text-blue-700 font-bold text-md hover:text-blue-800 transition"
                 >
-                  <User className="w-5 h-5" />
-                  Account
-                </button>
-                {accountOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                    <Link
-                      to="/user/update"
-                      className="block px-4 py-2 text-sm hover:bg-sky-50 hover:cursor-pointer text-blue-700 hover:text-blue-800 font-bold"
-                    >
-                      Update Account
-                    </Link>
-                    <p
-                     className="block px-4 py-2 text-sm hover:bg-sky-50 hover:cursor-pointer text-blue-700 hover:text-blue-800 font-bold"
-                      onClick={() => setOpen(true)}
-                    >
-                      Delete Account
-                    </p>
-                    <p
-                     className="block px-4 py-2 text-sm hover:bg-sky-50 hover:cursor-pointer text-blue-700 hover:text-blue-800 font-bold"
-                     onClick={()=>{
-                      userLogout
-                     }} 
-                    >Log Out</p>
-                  </div>
-                )}
-              </div>
-            )}
+                  Analytics
+                </Link>
+
+                {/* Show Account Dropdown only when logged in */}
+                <div className="relative">
+                  <button
+                    onClick={() => setAccountOpen(!accountOpen)}
+                    className="flex items-center gap-2 hover:bg-sky-50 hover:cursor-pointer text-blue-700 hover:text-blue-800 font-bold text-md"
+                  >
+                    <User className="w-5 h-5" />
+                    Account
+                  </button>
+                  {accountOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                      <Link
+                        to="/user/update"
+                        className="block px-4 py-2 text-sm hover:bg-sky-50 hover:cursor-pointer text-blue-700 hover:text-blue-800 font-bold"
+                      >
+                        Update Account
+                      </Link>
+                      <p
+                        className="block px-4 py-2 text-sm hover:bg-sky-50 hover:cursor-pointer text-blue-700 hover:text-blue-800 font-bold"
+                        onClick={() => setOpen(true)}
+                      >
+                        Delete Account
+                      </p>
+                      <p
+                        className="block px-4 py-2 text-sm hover:bg-sky-50 hover:cursor-pointer text-blue-700 hover:text-blue-800 font-bold"
+                        onClick={userLogout}
+                      >
+                        Log Out
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : null} {/* Render nothing while checking */}
 
             <Link to="/url">
               <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full font-bold transition hover:cursor-pointer">
@@ -191,8 +192,7 @@ const Dashboard = () => {
         {/* Mobile Menu */}
         {menuOpen && (
           <div className="md:hidden bg-white/90 backdrop-blur-md shadow-md px-6 py-4 space-y-4 relative z-10">
-            {/* Show Login/Register only when NOT logged in */}
-            {!isLoggedIn && (
+            {!isLoggedIn && !isCheckingToken ? (
               <>
                 <Link
                   to="/user/login"
@@ -207,52 +207,49 @@ const Dashboard = () => {
                   Register
                 </Link>
               </>
-            )}
-
-            {/* Show Analytics only when logged in */}
-            {isLoggedIn && (
-              <Link
-                to="/url/analytics"
-                className="block text-blue-600 font-medium"
-              >
-                Analytics
-              </Link>
-            )}
-
-            {/* Show Account Dropdown only when logged in */}
-            {isLoggedIn && (
-              <div className="w-full">
-                <button
-                  onClick={() => setAccountOpen(!accountOpen)}
-                  className="w-full flex items-center justify-start gap-2 text-blue-600 font-medium py-2 hover:bg-blue-50 rounded-md"
+            ) : isLoggedIn && !isCheckingToken ? (
+              <>
+                <Link
+                  to="/url/analytics"
+                  className="block text-blue-600 font-medium"
                 >
-                  Account
-                </button>
-                {accountOpen && (
-                  <div className="w-full bg-white rounded-md border border-gray-200 shadow-md transition-all animate-fade-in">
-                    <Link
-                      to="/account/update"
-                      className="block px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition"
-                    >
-                      Update Account
-                    </Link>
-                    <Link
-                      to="/account/delete"
-                      className="block px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition"
-                      onClick={() => setOpen(true)}
-                    >
-                      Delete Account
-                    </Link>
-                    <p
-                     className="block px-4 py-2 text-sm hover:bg-sky-50 hover:cursor-pointer text-blue-700 hover:text-blue-800 font-bold"
-                     onClick={()=>{
-                      userLogout
-                     }} 
-                    >Log Out</p>
-                  </div>
-                )}
-              </div>
-            )}
+                  Analytics
+                </Link>
+
+                {/* Show Account Dropdown only when logged in */}
+                <div className="w-full">
+                  <button
+                    onClick={() => setAccountOpen(!accountOpen)}
+                    className="w-full flex items-center justify-start gap-2 text-blue-600 font-medium py-2 hover:bg-blue-50 rounded-md"
+                  >
+                    Account
+                  </button>
+                  {accountOpen && (
+                    <div className="w-full bg-white rounded-md border border-gray-200 shadow-md transition-all animate-fade-in">
+                      <Link
+                        to="/account/update"
+                        className="block px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition"
+                      >
+                        Update Account
+                      </Link>
+                      <Link
+                        to="/account/delete"
+                        className="block px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition"
+                        onClick={() => setOpen(true)}
+                      >
+                        Delete Account
+                      </Link>
+                      <p
+                        className="block px-4 py-2 text-sm hover:bg-sky-50 hover:cursor-pointer text-blue-700 hover:text-blue-800 font-bold"
+                        onClick={userLogout}
+                      >
+                        Log Out
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : null}
 
             <Link to="/url">
               <button className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full font-semibold transition">
@@ -287,16 +284,17 @@ const Dashboard = () => {
                 Clean, quick, and efficient URL shortening. Make your links more
                 shareable and professional.
               </p>
-              <Link to="/url">
-                <button className="greener-button ">
-                  Get Started
-                  <span className="icon" aria-hidden="true">
-                    <img src={arrowsvg} alt="" />
-                  </span>
-                </button>
-              </Link>
+              <div className="text-center md:text-left">
+                <Link to="/url">
+                  <button className="greener-button ">
+                    Get Started
+                    <span className="icon" aria-hidden="true">
+                      <img src={arrowsvg} alt="" />
+                    </span>
+                  </button>
+                </Link>
+              </div>
             </div>
-
             <div className="bg-white/60 backdrop-blur-lg border border-blue-100 rounded-2xl shadow-xl p-8 space-y-5 text-center">
               <h3 className="text-2xl font-semibold text-blue-700">
                 How It Works
