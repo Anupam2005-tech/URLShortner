@@ -51,7 +51,7 @@ const Popup: React.FC<Props> = ({
         <div className="flex flex-col items-center text-center">
 
           {/* Title */}
-          <h3 className={`${titleColor} text-lg font-semibold mb-2`}>
+          <h3 className={`${titleColor} text-xl font-semibold mb-2`}>
             {title}
           </h3>
  
@@ -65,7 +65,7 @@ const Popup: React.FC<Props> = ({
         {/* Buttons */}
         <div className="mt-6 flex flex-col sm:flex-row justify-center sm:justify-end gap-3">
           <button
-            className={`px-4 py-2 rounded-md border ${firstOptionColor} ${firstOptionTextColor} ${firstOptionHoverColor ?? ''} transition-colors duration-200`}
+            className={`px-4 py-2 rounded-md outline-none border-none cursor-pointer ${firstOptionColor} ${firstOptionTextColor} ${firstOptionHoverColor ?? ''} transition-colors duration-200`}
             onClick={() => {
               onfirstOption();
               onclose();
@@ -74,7 +74,7 @@ const Popup: React.FC<Props> = ({
             {firstOption}
           </button>
           <button
-            className={`px-4 py-2 rounded-md ${secondOptionColor} ${firstOptionTextColor} ${secondOptionHoverColor ?? ''} transition-colors duration-200`}
+            className={`px-4 py-2 outline-none border-none rounded-md cursor-pointer ${secondOptionColor} ${firstOptionTextColor} ${secondOptionHoverColor ?? ''} transition-colors duration-200`}
             onClick={() => {
               onsecondOption();
               onclose();

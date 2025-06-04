@@ -58,7 +58,9 @@ const URLanalytics: React.FC = () => {
  <>
    <Popup
         title="Delete Analytics"
-        content={`${deleteTrash}`}
+        content={<div><img src={deleteTrash} alt="Delete Icon" className="w-20 mx-auto block" /> 
+        <p  className=" font-semibold font-sans">This action cannot be undone and will remove all your shortened URLs and data.
+</p></div>}
         firstOption="Cancel"
         secondOption="Delete All"
         isOpen={Open}
