@@ -7,7 +7,7 @@ interface protectedRouteProps{
     children:React.ReactNode
 }
 
-const ProtectedRoute=({children,redirectTo=`${backendURL}/usser/login`}:protectedRouteProps)=>{
+const ProtectedRoute=({children,redirectTo=`${backendURL}/user/login`}:protectedRouteProps)=>{
     const isLoggedIn = useAppSelector((state) => state.authentication.isloggedIn);
     if(!isLoggedIn){
 return <Navigate to={redirectTo} replace/>

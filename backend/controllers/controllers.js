@@ -140,10 +140,24 @@ async function fetchuserHandler(req, res) {
         maxAge: 48 * 60 * 60 * 1000,
       });
       
-      return res.status(201).json({ msg: ` login successfully`,redirectTo:'/' });
+      return res.status(200).json({ msg: ` login successfully`,redirectTo:'/' });
     }
   } catch (err) {
     return res.json({ msg: `some error occured while fetching user  ${err}` });
+  }
+}
+
+async function authCheckHandle(req,res){
+  try{
+    const checkForAuth= getUser(req.cookies.token)
+    if(!checkForAuth){
+      return res.status(401).json({msg:`unauthorized`})
+    }
+    else{
+      return res.status(200).json({msg:`user authorized`})
+    }
+  }catch(err){
+    return res.status(500).json({msg:`Internal server error`})
   }
 }
 
@@ -162,7 +176,7 @@ async function deleteuserHandle(req, res) {
       return res.json({ msg: "user deleted successfully" });
     }
   } catch (err) {
-    return res.json({ msg: `some error occured while deleting user ${err}` });
+    return res.json({ msg: `some error occured while deleting user` });
   }
 }
 
@@ -223,5 +237,6 @@ module.exports = {
   deleteuserHandle,
   updateuserHandle,
   analyticsDeleteHandle,
-  userlogoutHandle
+  userlogoutHandle,
+  authCheckHandle
 };

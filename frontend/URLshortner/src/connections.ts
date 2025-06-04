@@ -32,7 +32,9 @@ interface LoginUserResponse {
 interface deleteUserResponse{
   msg:string
 }
-
+interface UserAuthResponse{
+  msg:string
+}
 // create user handle
 export async function CreateUserHandle(
   payload: UserPrototype
@@ -83,6 +85,28 @@ export async function loginuserHandle(
     return { msg: "Login failed" };
   }
 }
+
+// hanle user auth check
+
+export async function userauthHandle():Promise<UserAuthResponse>{
+  try{
+    const response=await fetch(`${backendURL}/user/check/auth`,{
+      method:"GET",
+      credentials:"include"
+    })
+    if (!response.ok) {
+      return {msg:`Failed to check Authentication`};
+    }
+    const result=await response.json()
+    return result
+  }
+  catch(err){
+    return {msg:`Network error or server unreachable.`};
+  
+  }
+}
+
+// handle user Details update
 export async function updateUserHandle(payload:UpdateUserPayload):Promise<UpdateUserResponse> {
   try {
     const formData=new URLSearchParams()

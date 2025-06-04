@@ -6,13 +6,12 @@ import {
   checkUserloggedIn,
   checkUserloggedOut,
 } from "../../redux/slice/auth/authSlice";
-import cookies from "js-cookie";
 import "../../App.css";
 import arrowsvg from "../../assets/arrow.svg";
 import Popup from "../utils/Popup";
 import deleteTrash from "../../assets/deleteTrash.svg";
 import Footer from "./footer/Footer";
-import { deleteUserHandle, logOutUserHandle } from "../../connections";
+import { deleteUserHandle, logOutUserHandle,userauthHandle } from "../../connections";
 import {
   checkLoadingIn,
   checkLoadingOut,
@@ -33,9 +32,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     const checklogIn = async () => {
-      const token = cookies.get("token");
-      if (!token) {
+      const Checkuser =await userauthHandle()
+      if (!Checkuser) {
         dispatch(checkUserloggedOut());
+      } 
+      if (Checkuser?.msg?.toLowerCase() === "user authorized") {
+        dispatch(checkUserloggedIn());
       } else {
         dispatch(checkUserloggedIn());
       }
