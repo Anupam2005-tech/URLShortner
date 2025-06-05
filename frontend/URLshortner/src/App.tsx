@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./protectedRoutes/protectedRoutes";
-import PageSkeleton from "./components/PageSkeleton/PageSkeleton"; 
+import PageSkeleton from "./components/utils/PageSkeleton"; 
 
 // Lazy load all route-level components
 const Dashboard = lazy(() => import("./components/dashboard/dashboard"));
@@ -26,7 +26,7 @@ function App() {
 
         <Route path="/url" element={<URLpage />} />
 
-      
+        {/* Protected routes wrapped with ProtectedRoute component */}
         <Route
           path="/url/analytics"
           element={

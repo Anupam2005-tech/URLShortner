@@ -17,7 +17,7 @@ const QuickLinkLoader = () => {
           <circle className="back" cx={17} cy={17} r={14} />
           <circle className="front" cx={17} cy={17} r={14} />
         </svg>
-        <div className="text" data-text="Searching" />
+        <div className="text" data-text="Loading..." />
       </div>
     </div>
   );
