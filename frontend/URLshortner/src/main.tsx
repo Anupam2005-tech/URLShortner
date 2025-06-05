@@ -8,6 +8,7 @@ import { store } from "../src/redux/store.ts";
 createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
     <BrowserRouter>
+   
       <App />
     </BrowserRouter>
   </Provider>

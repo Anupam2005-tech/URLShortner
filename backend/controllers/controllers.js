@@ -153,7 +153,7 @@ async function authCheckHandle(req, res) {
       return res.status(401).json({ msg: "Unauthorized: No token found" });
     }
 
-    const checkForAuth = getUser(token); // must return decoded object like { email }
+    const checkForAuth = getUser(token); 
     if (!checkForAuth || !checkForAuth.email) {
       return res.status(401).json({ msg: "Unauthorized: Invalid token" });
     }
@@ -177,22 +177,34 @@ async function authCheckHandle(req, res) {
 
 async function deleteuserHandle(req, res) {
   try {
-    const user = getUser(req.cookies.token);
+    const userToken = req.cookies.token;
 
-    if (!user) {
-      return res.status(401).json({ msg: "Unauthorized " });
-    } else {
-      const deleteUser = await users.findByIdAndDelete(user._id);
-      if (!deleteUser) {
-        return res.status(404).json({ msg: "User not found" });
-      }
-      res.clearCookie("token", { httpOnly: true });
-      return res.json({ msg: "user deleted successfully" });
+    if (!userToken) {
+      return res.status(401).json({ msg: "Unauthorized: No token provided" });
     }
+
+    const checkUser = getUser(userToken);
+    if (!checkUser || !checkUser.email) {
+      return res.status(401).json({ msg: "Unauthorized: Invalid token" });
+    }
+
+    const { email } = checkUser;
+
+    const userQuery = await users.findOneAndDelete({ email });
+
+    if (!userQuery) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    res.clearCookie("token", { httpOnly: true });
+    return res.status(200).json({ msg: "Account deleted successfully" });
+
   } catch (err) {
-    return res.json({ msg: `some error occured while deleting user` });
+    console.error("Delete User Error:", err);
+    return res.status(500).json({ msg: "Some error occurred while deleting user" });
   }
 }
+
 
 async function updateuserHandle(req, res) {
   try {
@@ -228,18 +240,29 @@ async function updateuserHandle(req, res) {
   }
 }
 
-async function userlogoutHandle(req,res){
-  try{
-    res.clearCookie('token',{
+async function userlogoutHandle(req, res) {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(400).json({ msg: "No token to log out" });
+    }
+
+    const user = getUser(token);
+
+    res.clearCookie("token", {
       httpOnly: true,
-     secure:process.env.NODE_ENV === 'production',
-      sameSite:"None",
-    })
-    return res.status(200).json('logged Out successfully')
-  }catch(err){
-    return res.status(500).json({msg:`some error occurs while logging out`})
+      secure: true,   
+      sameSite: "Strict",
+
+    });
+
+    return res.status(200).json({ msg: "Logged out successfully" });
+
+  } catch (err) {
+    return res.status(500).json({ msg: "Some error occurred while logging out" });
   }
 }
+
 
 
 module.exports = {

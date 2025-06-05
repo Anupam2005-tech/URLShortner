@@ -5,6 +5,7 @@ interface UserPrototype {
   email: string;
   password: string;
 }
+
 interface CreateUserResponse {
   msg: string;
   redirectTo?: string;
@@ -14,6 +15,7 @@ interface LoginPrototype {
   email: string;
   password: string;
 }
+
 interface UpdateUserPayload {
   newName?: string;
   newEmail?: string;
@@ -29,15 +31,22 @@ interface LoginUserResponse {
   msg: string;
   redirectTo?: string;
 }
-interface deleteUserResponse{
-  msg:string
+
+interface DeleteUserResponse {
+  msg: string;
 }
-interface UserAuthResponse{
-  msg:string,
+
+interface LogOutResponse {
+  msg: string;
+}
+
+interface UserAuthResponse {
+  msg: string;
   user?: {
-    name: any;
-  };
+    name: string;
+  } | null;
 }
+
 // create user handle
 export async function CreateUserHandle(
   payload: UserPrototype
@@ -91,27 +100,28 @@ export async function loginuserHandle(
 
 // hanle user auth check
 
-export async function userauthHandle():Promise<UserAuthResponse>{
-  try{
-    const response=await fetch(`${backendURL}/user/check/auth`,{
-      method:"GET",
-      credentials:"include"
-    })
+export async function userauthHandle(): Promise<UserAuthResponse> {
+  try {
+    const response = await fetch(`${backendURL}/user/check/auth`, {
+      method: "GET",
+      credentials: "include",
+    });
+
     if (!response.ok) {
-      return {msg:`Failed to check Authentication`};
+      return { msg: "Failed to check authentication", user: null };
     }
-    const result=await response.json()
-    if(!result.user){
-     return {msg:'user'}  
+
+    const result = await response.json();
+    if (!result.user) {
+      return { msg: "User not authenticated", user: null };
     }
-   return{
-    msg: result.msg,
-    user: result.user,
-   }
-  }
-  catch(err){
-    return {msg:`Network error or server unreachable.`};
-  
+
+    return {
+      msg: result.msg,
+      user: result.user,
+    };
+  } catch {
+    return { msg: "Network error. Please try again later.", user: null };
   }
 }
 
@@ -145,37 +155,34 @@ export async function updateUserHandle(payload:UpdateUserPayload):Promise<Update
     return {msg:`Network error or server unreachable.`};
   }
 }
-
-export async function deleteUserHandle():Promise<deleteUserResponse> {
+export async function deleteUserHandle(): Promise<DeleteUserResponse> {
   try {
     const response = await fetch(`${backendURL}/user/delete`, {
       method: "DELETE",
       credentials: "include",
     });
     if (!response.ok) {
-      return {msg:`Failed to delete account`};
+      return { msg: "Failed to delete account" };
     }
-    const result = await response.json();
-    return result;
-  } catch (err) {
-    return {msg:`Network error or server unreachable.`};
+    return await response.json();
+  } catch {
+    return { msg: "Network error. Please try again later." };
   }
 }
 
-export async function logOutUserHandle(){
- try{
-  const response=await fetch(`${backendURL}/user/logout`, {
-    method: "POST",
-    credentials: "include",
-  });
-  if(!response.ok){
-    return {msg:`Failed to LogOut `};
+export async function logOutUserHandle(): Promise<LogOutResponse> {
+  try {
+    const response = await fetch(`${backendURL}/user/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+    if (!response.ok) {
+      return { msg: "Failed to log out" };
+    }
+    return await response.json();
+  } catch {
+    return { msg: "Network error. Please try again later." };
   }
-  const result = await response.json();
-  return result;
- }catch(err){
-  return {msg:`Network error or server unreachable.`};
- }
 }
 // url shorten handle
 

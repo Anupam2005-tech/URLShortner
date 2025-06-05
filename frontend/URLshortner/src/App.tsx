@@ -17,9 +17,7 @@ const UserUpdateForm = lazy(
 
 function App() {
   return (
-    // Wrap your entire Routes with Suspense.
-    // While any of the lazy-loaded components are being fetched,
-    // your PageSkeleton will be displayed.
+
     <Suspense fallback={<PageSkeleton />}>
       <Routes>
         <Route path="/" element={<Dashboard />} />
@@ -28,7 +26,7 @@ function App() {
 
         <Route path="/url" element={<URLpage />} />
 
-        {/* Protected routes wrapped with ProtectedRoute component */}
+      
         <Route
           path="/url/analytics"
           element={

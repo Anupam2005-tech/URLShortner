@@ -18,6 +18,7 @@ import {
   checkLoadingIn,
   checkLoadingOut,
 } from "../../redux/slice/usersSlice/usersSlice";
+import PageSkeleton from "../PageSkeleton/PageSkeleton";
 
 // Lazy-loaded components
 const Popup = lazy(() => import("../utils/Popup"));
@@ -55,44 +56,46 @@ const Dashboard = () => {
       const result = await deleteUserHandle();
       if (result) {
         setMsg(result.msg);
+        dispatch(checkUserloggedOut());
         setTimeout(() => {
           navigate("/");
         }, 1000);
       }
+    } catch (err) {
+      setMsg("Something went wrong while deleting your account.");
     } finally {
       dispatch(checkLoadingOut());
     }
   }
+  
 
   async function userLogout() {
     dispatch(checkLoadingIn());
     try {
       const result = await logOutUserHandle();
       if (result) {
+        dispatch(checkUserloggedOut());
         setTimeout(() => {
           navigate("/");
         }, 1000);
       }
+    } catch (err) {
+      setMsg("Logout failed.");
     } finally {
       dispatch(checkLoadingOut());
     }
   }
-
+  
   return (
     <>
-      <Suspense fallback={<div />}>
+      <Suspense fallback={<PageSkeleton />}>
         <Popup
           title="Delete Account"
           content={
             <div>
-              <img
-                src={deleteTrash}
-                alt="Delete Icon"
-                className="w-20 mx-auto block"
-              />
-              <p className=" font-semibold font-sans">
-                Are you sure you want to permanently delete your QuickLink
-                account?
+              <img src={deleteTrash} alt="Delete Icon" className="w-20 mx-auto block" />
+              <p className="font-semibold font-sans">
+                Are you sure you want to permanently delete your QuickLink account?
               </p>
             </div>
           }
@@ -113,93 +116,45 @@ const Dashboard = () => {
       </Suspense>
 
       {isLoading ? (
-        <Suspense fallback={<div className="text-center p-10">Loading...</div>}>
+        <Suspense fallback={<PageSkeleton />}>
           <QuickLinkLoader />
         </Suspense>
       ) : (
         <div className="min-h-screen flex flex-col bg-gradient-to-tr from-sky-50 via-white to-blue-100 text-gray-800 font-sans">
-          {/* Header */}
           <header className="bg-white/80 backdrop-blur-md shadow-md px-6 py-4 flex justify-between items-center sticky top-0 z-20 rounded-b-xl">
             <div className="flex items-center gap-4">
-              <button
-                className="md:hidden"
-                onClick={() => setMenuOpen(!menuOpen)}
-              >
+              <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
                 <Menu className="w-6 h-6 text-blue-600" />
               </button>
-
               <Link to="/" className="flex items-center gap-3">
-                <img
-                  src="/logo-removebg-preview.png"
-                  alt="Logo"
-                  className="w-10 h-10 object-contain"
-                />
-                <span className="text-2xl font-bold text-sky-600 tracking-wide">
-                  QuickLink
-                </span>
+                <img src="/logo-removebg-preview.png" alt="Logo" className="w-10 h-10 object-contain" />
+                <span className="text-2xl font-bold text-sky-600 tracking-wide">QuickLink</span>
               </Link>
             </div>
 
             <nav className="hidden md:flex items-center gap-5 text-sm font-medium relative">
-              {!isLoggedIn && (
-                <Link
-                  to="/user/login"
-                  className="text-blue-700 hover:text-blue-800 transition font-bold text-md"
-                >
-                  Login
-                </Link>
+              {!isLoggedIn ? (
+                <>
+                  <Link to="/user/login" className="text-blue-700 hover:text-blue-800 font-bold">Login</Link>
+                  <Link to="/register" className="text-blue-700 hover:text-blue-800 font-bold">Register</Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/url/analytics" className="text-blue-700 hover:text-blue-800 font-bold">Analytics</Link>
+                  <div className="relative">
+                    <button onClick={() => setAccountOpen(!accountOpen)} className="flex items-center gap-2 text-blue-700 hover:text-blue-800 font-bold">
+                      <User className="w-5 h-5" /> Account
+                    </button>
+                    {accountOpen && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                        <Link to="/user/update" className="block px-4 py-2 hover:bg-sky-50 text-blue-700 font-bold">Update Account</Link>
+                        <p onClick={() => setOpen(true)} className="block px-4 py-2 hover:bg-sky-50 text-blue-700 font-bold cursor-pointer">Delete Account</p>
+                        <p onClick={userLogout} className="block px-4 py-2 hover:bg-sky-50 text-blue-700 font-bold cursor-pointer">Log Out</p>
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
-
-              <Link
-                to="/register"
-                className="text-blue-700 hover:text-blue-800 transition font-bold text-md"
-              >
-                Register
-              </Link>
-
-              {isLoggedIn && (
-                <Link
-                  to="/url/analytics"
-                  className="text-blue-700 font-bold text-md hover:text-blue-800 transition"
-                >
-                  Analytics
-                </Link>
-              )}
-
-              {isLoggedIn && (
-                <div className="relative">
-                  <button
-                    onClick={() => setAccountOpen(!accountOpen)}
-                    className="flex items-center gap-2 hover:bg-sky-50 hover:cursor-pointer text-blue-700 hover:text-blue-800 font-bold text-md"
-                  >
-                    <User className="w-5 h-5" />
-                    Account
-                  </button>
-                  {accountOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                      <Link
-                        to="/user/update"
-                        className="block px-4 py-2 text-sm hover:bg-sky-50 text-blue-700 font-bold"
-                      >
-                        Update Account
-                      </Link>
-                      <p
-                        onClick={() => setOpen(true)}
-                        className="block px-4 py-2 text-sm hover:bg-sky-50 text-blue-700 font-bold cursor-pointer"
-                      >
-                        Delete Account
-                      </p>
-                      <p
-                        onClick={() => userLogout()}
-                        className="block px-4 py-2 text-sm hover:bg-sky-50 text-blue-700 font-bold cursor-pointer"
-                      >
-                        Log Out
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-
               <Link to="/url">
                 <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full font-bold transition hover:cursor-pointer">
                   Shorten URL <ArrowRightCircle size={18} />
@@ -210,69 +165,33 @@ const Dashboard = () => {
 
           {menuOpen && (
             <div className="md:hidden bg-white/90 backdrop-blur-md shadow-md px-6 py-4 space-y-4 relative z-10">
-              {!isLoggedIn && (
-                <Link
-                  to="/user/login"
-                  className="text-blue-700 hover:text-blue-800 transition font-bold text-md"
-                >
-                  Login
-                </Link>
-              )}
-
-              <Link to="/register" className="block text-blue-600 font-medium">
-                Register
-              </Link>
-
-              {isLoggedIn && (
-                <Link
-                  to="/url/analytics"
-                  className="block text-blue-600 font-medium"
-                >
-                  Analytics
-                </Link>
-              )}
-
-              {isLoggedIn && (
-                <div className="w-full">
-                  <button
-                    onClick={() => setAccountOpen(!accountOpen)}
-                    className="w-full flex items-center justify-start gap-2 text-blue-600 font-medium py-2 hover:bg-blue-50 rounded-md"
-                  >
+              {!isLoggedIn ? (
+                <>
+                  <Link to="/user/login" className="text-blue-700 font-bold">Login</Link>
+                  <Link to="/register" className="text-blue-700 font-bold">Register</Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/url/analytics" className="text-blue-600 font-bold">Analytics</Link>
+                  <button onClick={() => setAccountOpen(!accountOpen)} className="text-blue-600 font-bold py-2">
                     Account
                   </button>
                   {accountOpen && (
-                    <div className="w-full bg-white rounded-md border border-gray-200 shadow-md transition-all animate-fade-in">
-                      <Link
-                        to="/user/update"
-                        className="block px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition"
-                      >
-                        Update Account
-                      </Link>
-                      <p
-                        onClick={() => setOpen(true)}
-                        className="block px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition cursor-pointer"
-                      >
-                        Delete Account
-                      </p>
-                      <p
-                        onClick={() => userLogout()}
-                        className="block px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 transition cursor-pointer"
-                      >
-                        Log Out
-                      </p>
+                    <div className="bg-white border rounded shadow-md">
+                      <Link to="/user/update" className="block px-4 py-2 hover:bg-blue-50 text-blue-700 font-bold">Update Account</Link>
+                      <p onClick={() => setOpen(true)} className="block px-4 py-2 hover:bg-blue-50 text-blue-700 font-bold cursor-pointer">Delete Account</p>
+                      <p onClick={userLogout} className="block px-4 py-2 hover:bg-blue-50 text-blue-700 font-bold cursor-pointer">Log Out</p>
                     </div>
                   )}
-                </div>
+                </>
               )}
-
               <Link to="/url">
-                <button className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full font-semibold transition">
+                <button className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full font-semibold">
                   Shorten URL <ArrowRightCircle size={18} />
                 </button>
               </Link>
             </div>
           )}
-
           {/* Main Content */}
           <main className="flex-grow px-6 py-12 md:px-20">
             <section className="text-center mb-20">
@@ -297,7 +216,7 @@ const Dashboard = () => {
                   <button className="greener-button">
                     Get Started
                     <span className="icon" aria-hidden="true">
-                      <img src={arrowsvg} alt="" />
+                      <img src={arrowsvg} alt="get started" />
                     </span>
                   </button>
                 </Link>
@@ -336,7 +255,7 @@ const Dashboard = () => {
             </section>
           </main>
 
-          <Suspense fallback={<div className="text-center p-6">Loading footer...</div>}>
+          <Suspense fallback={<PageSkeleton/>}>
             <Footer />
           </Suspense>
         </div>
