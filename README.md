@@ -1,47 +1,47 @@
-# Quickink
+# QuickLink
 
-A robust, flexible, and developer-friendly URL Shortening service built with TypeScript, React ,Javascript and Tailwind. This project enables users to convert long URLs into compact, shareable links, complete with analytics and custom management features. Ideal for personal use, startups, or as a learning resource for full-stack web development.
+A robust, flexible, and user-friendly URL Shortening service built with TypeScript, React, JavaScript, and Tailwind CSS. QuickLink empowers users to convert long URLs into compact, shareable links, complete with analytics and custom management features. Perfect for personal use, startups, or as a learning resource for full-stack web development.
 
 ---
 
 ## 🚀 Features
 
 - **Shorten Any URL**  
-  Transform lengthy URLs into concise, easy-to-remember short links.
+  Instantly transform lengthy URLs into concise, easy-to-share short links.
 
 - **Custom Aliases**  
   Create personalized, human-readable short codes or let the system auto-generate them.
 
 - **Automatic Redirection**  
-  Users visiting a short URL are instantly redirected to the original link.
+  Visitors to a short URL are seamlessly redirected to the original link.
 
 - **Analytics Dashboard**  
-  Track the number of visits, referrers, and other usage statistics for each short URL.
+  Track visits, referrers, and usage statistics for each short URL.
 
 - **RESTful API**  
   Integrate URL shortening and analytics into your own applications via a simple HTTP API.
 
 - **User Interface**  
-  Clean and responsive web UI for shortening links, viewing analytics, and managing URLs.
+  Clean, responsive web UI for shortening links, viewing analytics, and managing URLs.
 
 - **Security**  
-  Input validation and error handling throughout.
+  Comprehensive input validation and error handling throughout.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend:**React.Typescript,Tailwind,Redux(state management)
-- **Backend:** Javascript (Node.js with Express)
+- **Frontend:** React, TypeScript, Tailwind CSS, Redux (state management)
+- **Backend:** Node.js (Express)
 - **Database:** MongoDB Atlas
-- **Other:** REST API, JWT,bcrypt
+- **Other:** REST API, JWT, bcrypt
 
 ---
 
 ## 📖 How It Works
 
 1. **Submit a URL**  
-   Use the web UI or API to submit a long URL (and optionally, a custom alias).
+   Use the web UI or API to submit a long URL (optionally with a custom alias).
 
 2. **Short Link Generation**  
    The backend generates a unique or custom short code and stores the mapping in the database.
@@ -50,20 +50,23 @@ A robust, flexible, and developer-friendly URL Shortening service built with Typ
    When a user accesses the short URL, the service looks up the code and redirects to the original URL.
 
 4. **View Analytics**  
-The system logs visits and exposes analytics per link.
+   The system logs visits and exposes analytics per link.
+
+---
 
 ## 🌐 Web Interface
 
 - **Home:**
-- ![image](https://github.com/user-attachments/assets/f95d0fa4-6c14-4ae3-b102-de139c7d6d23)
+  ![Home Screenshot](https://github.com/user-attachments/assets/f95d0fa4-6c14-4ae3-b102-de139c7d6d23)
+  ![Home Screenshot 2](https://github.com/user-attachments/assets/cfd506ae-6972-4fc8-9015-934c9cb20fc0)
 
-- ![image](https://github.com/user-attachments/assets/cfd506ae-6972-4fc8-9015-934c9cb20fc0)
-- 
 - **Analytics:**
-- ![image](https://github.com/user-attachments/assets/942a5891-8f26-48dd-8a77-565c73de8b4e)
-- **Shorten URL**
-- ![image](https://github.com/user-attachments/assets/db9cef49-5c62-44c1-8737-b720a462598f)
+  ![Analytics Screenshot](https://github.com/user-attachments/assets/942a5891-8f26-48dd-8a77-565c73de8b4e)
 
+- **Shorten URL:**
+  ![Shorten URL Screenshot](https://github.com/user-attachments/assets/db9cef49-5c62-44c1-8737-b720a462598f)
+
+---
 
 ## ⚙️ Installation & Setup
 
@@ -88,7 +91,7 @@ The system logs visits and exposes analytics per link.
    ```
    The server will start on `http://localhost:8000` (or your configured port).
 
-
+---
 
 ## 🤝 Contributing
 
