@@ -196,7 +196,8 @@ async function deleteuserHandle(req, res) {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    res.clearCookie("token", { httpOnly: true });
+    res.clearCookie("token", { httpOnly: true,secure: true,   
+      sameSite: "None", });
     return res.status(200).json({ msg: "Account deleted successfully" });
 
   } catch (err) {
@@ -252,7 +253,7 @@ async function userlogoutHandle(req, res) {
     res.clearCookie("token", {
       httpOnly: true,
       secure: true,   
-      sameSite: "Strict",
+      sameSite: "None",
 
     });
 

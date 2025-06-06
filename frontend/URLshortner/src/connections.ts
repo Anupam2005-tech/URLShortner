@@ -204,7 +204,7 @@ export async function URLshortnerHandle(
     });
 
     if (response.status === 401) {
-      navigate("/user/login");
+      navigate(`/user/login`);
       return { shortId: "", error: "Unauthorized. Redirecting to login." };
     }
 

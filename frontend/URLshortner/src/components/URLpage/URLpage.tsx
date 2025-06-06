@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { URLshortnerHandle } from "../../connections";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +6,6 @@ import copysrc from "../../assets/copy.svg";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import QuickLinkLoader from "../utils/loader";
 import { checkLoadingIn, checkLoadingOut } from "../../redux/slice/usersSlice/usersSlice";
-import { userauthHandle } from "../../connections";
 
 interface FormValues {
   redirectURL: string;
@@ -20,23 +19,11 @@ const URLpage: React.FC = () => {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const dispatch = useAppDispatch();
   const isloading = useAppSelector(state => state.loading.isLoadingIn);
-  const [name, setName] = useState('');
 
-  async function getUserName(): Promise<string> {
-    try {
-      const response = await userauthHandle();
-      
-      if (response.user?.name) {
-        return response.user.name;
-      } else {
-        
-        return 'User';
-      }
-    } catch (err: any) {
-      
-      return 'User';
-    }
-  }
+  // Move these useAppSelector calls inside the component
+  const isLoggedIn = useAppSelector(state => state.authentication.isLoggedIn);
+  const loginChecked = useAppSelector(state => state.authentication.loginChecked);
+  const name = useAppSelector(state => state.authentication.user?.name || "User");
 
   const {
     register,
@@ -47,27 +34,24 @@ const URLpage: React.FC = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     dispatch(checkLoadingIn());
-    setError(null);
-    
+
     try {
       const result = await URLshortnerHandle(data.redirectURL, navigate);
       setShortId(result.shortId);
-      
+
       reset();
     } catch (err: any) {
       console.error('URL shortening error:', err);
-      
-      // Handle different types of errors
+
       let errorMessage = 'An unexpected error occurred';
-      
+
       if (err.code === 'NETWORK_ERROR' || err.message?.includes('network')) {
         errorMessage = 'Network error. Please check your connection and try again.';
       } else if (err.status === 400) {
         errorMessage = 'Invalid URL provided. Please check the URL format.';
       } else if (err.status === 401) {
         errorMessage = 'You are not authorized. Please log in again.';
-        
-        navigate('/login');
+        navigate('/user/login');
       } else if (err.status === 429) {
         errorMessage = 'Too many requests. Please wait a moment and try again.';
       } else if (err.status === 500) {
@@ -75,7 +59,7 @@ const URLpage: React.FC = () => {
       } else if (err.message) {
         errorMessage = err.message;
       }
-      
+
       setError(errorMessage);
     } finally {
       dispatch(checkLoadingOut());
@@ -84,15 +68,13 @@ const URLpage: React.FC = () => {
 
   const handleCopyClick = async () => {
     const textToCopy = `${backendURL}/url/${shortId}`;
-    
-    try {
 
+    try {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(textToCopy);
         setCopySuccess(true);
         setTimeout(() => setCopySuccess(false), 2000);
       } else {
-
         copyToClipboardFallback(textToCopy);
       }
     } catch (err) {
@@ -110,15 +92,14 @@ const URLpage: React.FC = () => {
       textArea.style.top = '-9999px';
       textArea.setAttribute('readonly', '');
       document.body.appendChild(textArea);
-      
-      // Select the text
+
       textArea.select();
       textArea.setSelectionRange(0, 99999);
-    
+
       const successful = document.execCommand && document.execCommand('copy');
-      
+
       document.body.removeChild(textArea);
-      
+
       if (successful) {
         setCopySuccess(true);
         setTimeout(() => setCopySuccess(false), 2000);
@@ -126,26 +107,11 @@ const URLpage: React.FC = () => {
         throw new Error('Copy command failed');
       }
     } catch (fallbackErr) {
-      console.error('Fallback copy failed:', fallbackErr);
-      // Show error message to user
+      console.error('Fallback copy failed:', fallbackErr); // Log the error for debugging
       setError('Failed to copy to clipboard. Please copy the URL manually.');
       setTimeout(() => setError(null), 3000);
     }
   };
-
-  useEffect(() => {
-    const fetchUserName = async () => {
-      try {
-        const userName = await getUserName();
-        setName(userName);
-      } catch (err) {
-        console.error('Error setting user name:', err);
-        setName('User'); 
-      }
-    };
-
-    fetchUserName();
-  }, []);
 
   return (
     <>
@@ -155,9 +121,12 @@ const URLpage: React.FC = () => {
         </div>
       ) : (
         <>
-       <h1 className="absolute top-8 left-1/2 -translate-x-1/2 text-center text-7xl lg:text-8xl font-bold px-2 bg-gradient-to-r from-indigo-900 via-purple-800 to-blue-900 text-transparent bg-clip-text">
-  Welcome back {name}!
-</h1>
+          {/* Conditional rendering for the welcome banner */}
+          {isLoggedIn && loginChecked && (
+            <h1 className="absolute top-8 left-1/2 -translate-x-1/2 text-center text-7xl lg:text-8xl font-bold px-2 bg-gradient-to-r from-indigo-900 via-purple-800 to-blue-900 text-transparent bg-clip-text">
+              Welcome back {name}!
+            </h1>
+          )}
 
           <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200 px-4">
             <div className="w-full max-w-xl bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl p-8 border border-gray-200">
