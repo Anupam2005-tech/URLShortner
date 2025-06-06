@@ -4,7 +4,7 @@ import { loginuserHandle } from '../../connections';
 import { useNavigate, Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { checkLoadingIn, checkLoadingOut } from '../../redux/slice/usersSlice/usersSlice';
-
+import { checkUserloggedIn } from "../../redux/slice/auth/authSlice";
 // Lazy load the loader component
 const QuickLinkLoader = lazy(() => import("../utils/loader"));
 
@@ -30,6 +30,9 @@ const LoginForm: React.FC = () => {
     try {
       const result = await loginuserHandle(data);
       setmsg(result.msg);
+      if (result.user) {
+        dispatch(checkUserloggedIn(result.user)); 
+      }
       if (result.redirectTo) {
         setTimeout(() => {
           navigate(result.redirectTo!);

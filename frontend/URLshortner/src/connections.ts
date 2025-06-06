@@ -30,6 +30,7 @@ interface UpdateUserResponse {
 interface LoginUserResponse {
   msg: string;
   redirectTo?: string;
+  user?: { name?: string };
 }
 
 interface DeleteUserResponse {
