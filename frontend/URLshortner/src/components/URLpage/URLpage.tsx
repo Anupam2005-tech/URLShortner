@@ -91,7 +91,7 @@ const URLpage: React.FC = () => {
   };
 
   const handleCopyClick = async () => {
-    const textToCopy = `${shortId}`;
+    const textToCopy = `${backendURL}/url${shortId}`;
     try {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(textToCopy);
@@ -200,7 +200,7 @@ const URLpage: React.FC = () => {
                   href={`${backendURL}/url/${shortId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-indigo-700 font-semibold underline hover:text-indigo-900 break-words flex-1 mr-4"
+                  className="text-indigo-700 text-center font-semibold  hover:text-indigo-900 break-words flex-1 mr-4"
                 >
                   {shortId}
                 </a>
