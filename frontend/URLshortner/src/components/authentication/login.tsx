@@ -1,12 +1,11 @@
-import React, { useState, lazy, Suspense } from "react";
+import React, { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { loginuserHandle } from "../../connections";
+import { loginuserHandle } from '../../connections';
 import { useNavigate, Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { checkLoadingIn, checkLoadingOut } from "../../redux/slice/usersSlice/usersSlice";
 import { checkUserloggedIn } from "../../redux/slice/auth/authSlice";
-
-const QuickLinkLoader = lazy(() => import("../utils/loader"));
+import { checkLoadingIn, checkLoadingOut } from '../../redux/slice/usersSlice/usersSlice';
+import QuickLinkLoader from "../utils/loader";
 
 type LoginFormInputs = {
   email: string;
@@ -14,12 +13,13 @@ type LoginFormInputs = {
 };
 
 const LoginForm: React.FC = () => {
-  const [msg, setmsg] = useState("");
+  const [msg, setmsg] = useState('');
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const isloading = useAppSelector((state) => state.loading.isLoadingIn);
-  
+  // Adjust this selector according to your Redux state structure!
+  const isloading = useAppSelector(state => state.loading.isLoadingIn);
+
 
   const {
     register,
@@ -32,14 +32,13 @@ const LoginForm: React.FC = () => {
     try {
       const result = await loginuserHandle(data);
       setmsg(result.msg);
+      
       if (result.user) {
-        dispatch(checkUserloggedIn(result.user));
-          navigate("/url"); 
-
-      }
-    } catch (err) {
-      console.error(err);
-      setmsg("Login failed. Please try again.");
+        dispatch(checkUserloggedIn(result.user))
+        setTimeout(() => {
+          navigate('/url');
+        }, 1000);
+      } 
     } finally {
       dispatch(checkLoadingOut());
     }
@@ -47,7 +46,7 @@ const LoginForm: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Left branding */}
+      {/* Left branding section */}
       <div className="w-full lg:w-1/2 bg-gradient-to-br from-blue-700 to-blue-500 text-white flex flex-col justify-center items-center p-6 sm:p-12">
         <div className="text-6xl font-bold mb-6">✳️</div>
         <h1 className="text-4xl font-extrabold mb-3">Hello QuickLink! 👋</h1>
@@ -57,13 +56,11 @@ const LoginForm: React.FC = () => {
         <p className="absolute bottom-6 text-sm text-white/70">© 2025 QuickLink. All rights reserved.</p>
       </div>
 
-      {/* Right login form */}
+      {/* Right login form section */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 bg-white">
         <div className="w-full max-w-md">
           {isloading ? (
-            <Suspense fallback={<div className="text-center text-gray-600">Loading...</div>}>
-              <QuickLinkLoader />
-            </Suspense>
+            <QuickLinkLoader />
           ) : (
             <>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Welcome Back!</h2>
