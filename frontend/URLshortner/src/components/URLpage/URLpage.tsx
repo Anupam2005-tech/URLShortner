@@ -30,7 +30,13 @@ const URLpage: React.FC = () => {
     if (!loginChecked) {
       dispatch(checkLogIn());
     }
-  }, [dispatch, loginChecked]); 
+  }, [dispatch, loginChecked]);
+
+  useEffect(() => {
+    if (loginChecked && !isLoggedIn) {
+      navigate("/user/login");
+    }
+  }, [loginChecked, isLoggedIn, navigate]);
 
   const {
     register,
@@ -47,12 +53,12 @@ const URLpage: React.FC = () => {
 
     if (!isLoggedIn) {
       setError("You must be logged in to shorten URLs. Redirecting to login...");
-      setTimeout(() => navigate("/user/login"), 1500); 
+      setTimeout(() => navigate("/user/login"), 1500);
       return;
     }
 
     dispatch(checkLoadingIn());
-    setError(null); 
+    setError(null);
 
     try {
       const result = await URLshortnerHandle(data.redirectURL, navigate);
@@ -69,7 +75,7 @@ const URLpage: React.FC = () => {
         errorMessage = "Invalid URL provided. Please check the URL format.";
       } else if (err.status === 401) {
         errorMessage = "You are not authorized. Please log in again.";
-        navigate("/user/login"); 
+        navigate("/user/login");
       } else if (err.status === 429) {
         errorMessage = "Too many requests. Please wait a moment and try again.";
       } else if (err.status === 500) {
@@ -85,7 +91,7 @@ const URLpage: React.FC = () => {
   };
 
   const handleCopyClick = async () => {
-    const textToCopy = `${backendURL}/url/${shortId}`;
+    const textToCopy = `${shortId}`;
     try {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(textToCopy);
@@ -134,10 +140,6 @@ const URLpage: React.FC = () => {
       </div>
     );
   }
-  if (!isLoggedIn && loginChecked) {
-    navigate("/user/login");
-    return null; 
-  }
 
   return (
     <>
@@ -184,7 +186,7 @@ const URLpage: React.FC = () => {
 
             <button
               type="submit"
-              disabled={isLoading || !loginChecked} 
+              disabled={isLoading || !loginChecked}
               className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed text-white py-3 rounded-xl font-semibold text-lg transition-shadow shadow-md hover:shadow-lg hover:cursor-pointer flex items-center justify-center"
             >
               {isLoading ? <QuickLinkLoader /> : "Shorten URL"}

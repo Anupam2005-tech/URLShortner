@@ -31,13 +31,19 @@ const LoginForm: React.FC = () => {
       const result = await loginuserHandle(data);
       setmsg(result.msg);
       if (result.user) {
-        dispatch(checkUserloggedIn(result.user)); 
-      }
-      if (result.redirectTo) {
+        dispatch(checkUserloggedIn(result.user));
         setTimeout(() => {
-          navigate(result.redirectTo!);
-        }, 1000);
-      } 
+          if (result.redirectTo) {
+            navigate(result.redirectTo);
+          } else {
+            navigate("/url");
+          }
+        }, 150)
+      } else if (result.redirectTo) {
+        setTimeout(() => {
+          navigate('/user/login');
+        }, 150);
+      }
     } finally {
       dispatch(checkLoadingOut());
     }
