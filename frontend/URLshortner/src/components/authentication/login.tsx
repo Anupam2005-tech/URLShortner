@@ -34,17 +34,17 @@ const LoginForm: React.FC = () => {
       setmsg(result.msg);
       if (result.user) {
         dispatch(checkUserloggedIn(result.user));
+
+        setTimeout(()=>{
+          navigate('/url')
+        },1000)
       }
     } finally {
       dispatch(checkLoadingOut());
     }
   };
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate("/url");
-    }
-  }, [isLoggedIn, navigate]);
+
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
