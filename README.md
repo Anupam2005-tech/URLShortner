@@ -1,6 +1,6 @@
 # QuickLink
 
-A robust, flexible, and user-friendly URL Shortening service built with TypeScript, React, JavaScript, and Tailwind CSS. QuickLink empowers users to convert long URLs into compact, shareable links, complete with analytics and custom management features. Perfect for personal use, startups, or as a learning resource for full-stack web development.
+A robust, flexible, and user-friendly URL Shortening service built with TypeScript, React, JavaScript,Node.js,Express.js,MongoDB Atlas and Tailwind CSS. QuickLink empowers users to convert long URLs into compact, shareable links, complete with analytics and custom management features. Perfect for personal use, startups, or as a learning resource for full-stack web development.
 
 ---
 
