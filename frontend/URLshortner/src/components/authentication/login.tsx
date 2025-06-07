@@ -34,9 +34,8 @@ const LoginForm: React.FC = () => {
       setmsg(result.msg);
       if (result.user) {
         dispatch(checkUserloggedIn(result.user));
-        setTimeout(()=>{
           navigate("/url"); 
-        },1000)
+
       }
     } catch (err) {
       console.error(err);
