@@ -106,6 +106,8 @@ Open an issue to discuss new features or report bugs.
 
 ---
 
+WARNING:THIS WEB IS NOT MANTAINED ANYMORE. SO THERE MAY HAVE SOME BUGS ALSO.
+
 ## 🗨️ Contact
 
 For questions, feedback, or support, open an [issue](https://github.com/Anupam2005-tech/URLShortner/issues) or contact [Anupam2005-tech](https://github.com/Anupam2005-tech).
