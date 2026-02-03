@@ -6,7 +6,6 @@ import copysrc from "../../assets/copy.svg";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import QuickLinkLoader from "../utils/loader";
 import { checkLoadingIn, checkLoadingOut } from "../../redux/slice/usersSlice/usersSlice";
-import { checkLogIn } from "../../redux/slice/auth/authThunks";
 
 interface FormValues {
   redirectURL: string;
@@ -26,12 +25,7 @@ const URLpage: React.FC = () => {
   const loginChecked = useAppSelector((state) => state.authentication.loginChecked);
   const name = useAppSelector((state) => state.authentication.user?.name || "User");
 
-  useEffect(() => {
-    if (!loginChecked) {
-      dispatch(checkLogIn());
-    }
-  }, [dispatch, loginChecked]);
-
+  // Redirect to login if not authenticated
   useEffect(() => {
     if (loginChecked && !isLoggedIn) {
       navigate("/user/login");

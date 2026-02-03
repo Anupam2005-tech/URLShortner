@@ -26,6 +26,7 @@ const RegistrationForm: React.FC = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     dispatch(checkLoadingIn());
+    setMsg(''); // Clear previous messages
     try {
       const result = await CreateUserHandle(data);
       setMsg(result.msg);
@@ -35,6 +36,12 @@ const RegistrationForm: React.FC = () => {
           navigate(result.redirectTo!);
         }, 1000);
       }
+    } catch (error: any) {
+      // Handle network/CORS errors
+      const errorMsg = error.message?.includes('Failed to fetch') || error.message?.includes('CORS')
+        ? 'Unable to connect to server. Please check your network connection or try again later.'
+        : 'An unexpected error occurred. Please try again.';
+      setMsg(errorMsg);
     } finally {
       dispatch(checkLoadingOut());
     }

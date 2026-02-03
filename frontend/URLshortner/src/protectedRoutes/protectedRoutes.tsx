@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAppSelector } from "../redux/hooks";
 import type React from "react";
+import QuickLinkLoader from "../components/utils/loader";
 
 interface protectedRouteProps{
     redirectTo?:string,
@@ -9,10 +10,22 @@ interface protectedRouteProps{
 
 const ProtectedRoute=({children,redirectTo=`/user/login`}:protectedRouteProps)=>{
     const isLoggedIn = useAppSelector((state) => state.authentication.isLoggedIn);
-    if(!isLoggedIn){
-return <Navigate to={redirectTo} replace/>
+    const loginChecked = useAppSelector((state) => state.authentication.loginChecked);
+    
+    // Wait for authentication check to complete
+    if (!loginChecked) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200">
+          <QuickLinkLoader />
+        </div>
+      );
     }
-            return <>{children}</>
-
+    
+    if(!isLoggedIn){
+      return <Navigate to={redirectTo} replace/>
+    }
+    
+    return <>{children}</>
 }
+
 export default ProtectedRoute

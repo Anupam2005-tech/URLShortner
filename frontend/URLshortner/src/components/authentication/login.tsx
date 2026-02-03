@@ -29,16 +29,26 @@ const LoginForm: React.FC = () => {
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     dispatch(checkLoadingIn());
+    setmsg(''); // Clear previous messages
     try {
       const result = await loginuserHandle(data);
-      setmsg(result.msg);
       
       if (result.user) {
-        dispatch(checkUserloggedIn(result.user))
+        setmsg(result.msg || 'Login successful!');
+        dispatch(checkUserloggedIn(result.user));
         setTimeout(() => {
           navigate('/url');
         }, 1000);
-      } 
+      } else {
+        // Login failed - show error message
+        setmsg(result.msg || 'Login failed. Please check your credentials.');
+      }
+    } catch (error: any) {
+      // Handle network/CORS errors
+      const errorMsg = error.message?.includes('Failed to fetch') || error.message?.includes('CORS')
+        ? 'Unable to connect to server. Please check your network connection or try again later.'
+        : 'An unexpected error occurred. Please try again.';
+      setmsg(errorMsg);
     } finally {
       dispatch(checkLoadingOut());
     }

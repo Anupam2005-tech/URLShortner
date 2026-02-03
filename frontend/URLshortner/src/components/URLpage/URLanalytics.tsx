@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { URLanalyticsHandle, analyticsDeleteHandle } from "../../connections";
 import trash from '../../assets/trash.svg'
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
@@ -22,7 +21,6 @@ const URLanalytics: React.FC = () => {
   const [data, setData] = useState<AnalyticsData[]>([]);
   const [error, setError] = useState<string>("");
   const [Open,setOpen]=useState(false)
-  const navigate = useNavigate();
 
   async function fetchData() {
     dispatch(checkLoadingIn());
@@ -39,7 +37,8 @@ const URLanalytics: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   async function deleteAnalytics() {
     dispatch(checkLoadingIn());
